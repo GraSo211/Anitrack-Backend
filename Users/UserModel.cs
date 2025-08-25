@@ -8,4 +8,6 @@ public class UserModel
     public List<int> FavouriteAnimeList { get; set; }
     public List<int> WatchlistAnimeList { get; set; }
     public List<int> CompletedAnimeList { get; set; }
+
+    public List<EpisodeModel> WatchedEpisodes { get; set; }
 }

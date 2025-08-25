@@ -1,14 +1,24 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 [ApiController]
 [Route("api/[controller]")]
 public class UserController : ControllerBase
 {
+
+    private AnitrackContext _dbcontext;
+
+    public UserController(AnitrackContext dbcontext)
+    {
+        _dbcontext = dbcontext;
+    }
+
     [HttpGet]
     public IActionResult GetUsers()
     {
         // Your logic to get users
-        return Ok();
+        var users = _dbcontext.Users.ToList();
+        return Ok(users);
     }
 
     [HttpPost]
