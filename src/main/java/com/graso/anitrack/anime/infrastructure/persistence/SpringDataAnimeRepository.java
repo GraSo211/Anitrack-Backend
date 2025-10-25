@@ -1,7 +1,6 @@
-package com.graso.anitrack.anime.infrastructure.persistance;
+package com.graso.anitrack.anime.infrastructure.persistence;
 
-import com.graso.anitrack.anime.infrastructure.persistance.entity.AnimeEntity;
-import org.mapstruct.Mapper;
+import com.graso.anitrack.anime.infrastructure.persistence.entity.AnimeEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,23 +1,22 @@
 package com.graso.anitrack.anime.domain.model;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.util.List;
 
 public record Anime(
         Long id,
         Long malId,
         String name,
-        String sumary,
+        String summary,
         String status,
-        int calification,
+        String bannerImage,
+        int rating,
         int popularity,
-        String[] genres,
+        List<String> genres,
         String image,
-        String banner,
         String source,
-        int epCount,
-        Date startDate,
-        int avgEpDuration
-
-
+        int episodeCount,
+        LocalDate startDate,
+        int averageEpisodeDuration
 ) {
 }
