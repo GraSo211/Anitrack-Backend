@@ -4,9 +4,11 @@ import jdk.jfr.DataAmount;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.Map;
+
 @Data
 @AllArgsConstructor
 public class PostQueryDto {
     String query;
-    Object variables;
+    private Map<String, Object> variables;
 }

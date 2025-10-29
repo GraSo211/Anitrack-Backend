@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.util.Map;
+
 @Component
 @AllArgsConstructor
 public class AniListApiClient {
@@ -20,8 +22,9 @@ public class AniListApiClient {
     public Anime fetchAnimeById(Long id){
         final String query=
                 """
-                     query {
-                           Media(id: ${id}) {
+                     query($id:Int) {
+                           Media(id: $id) {
+                             id
                              idMal
                              title {
                                romaji
@@ -53,14 +56,13 @@ public class AniListApiClient {
                            }
                          }   
                 """;
-        PostQueryDto postQueryDto = new PostQueryDto(query, id);
-        Mono<ResponseAniListDto> responseDtoMono =webClientBuilder.build()
+        PostQueryDto postQueryDto = new PostQueryDto(query, Map.of("id", id.longValue()));
+        Mono<ResponseAniListDto> responseDtoMono = webClientBuilder.build()
                 .post()
                 .uri("https://graphql.anilist.co")
                 .bodyValue(postQueryDto)
                 .retrieve()
                 .bodyToMono(ResponseAniListDto.class);
-        System.out.println(responseDtoMono);
         ResponseAniListDto responseAniListDto = responseDtoMono.block();
         return aniListAnimeMapper.toDomain(responseAniListDto) ;
     }

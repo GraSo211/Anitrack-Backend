@@ -1,14 +1,17 @@
 package com.graso.anitrack.anime.infrastructure.anilist.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 public record ResponseAniListDto(Data data) {
-    public record Data(Media media){
-        public record  Media(Long id, Long idMal, Title title, CoverImage coverImage, String description,
-                             String bannerImage, int episodes, StartDate startDate, int duration, boolean isAdult,
-                             List<String> genres, int averageScore, int popularity, String source, String status,
-                             NextAiringEpisode nextAiringEpisode){
+    public record Data(@JsonProperty("Media") Media media){
+        public record  Media(Long id, Long idMal, Title title, Optional<CoverImage> coverImage, String description,
+                             Optional<String> bannerImage, Optional<Integer> episodes, Optional<StartDate> startDate, Optional<Integer> duration, boolean isAdult,
+                             List<String> genres, Optional<Integer> averageScore, Optional<Integer> popularity, Optional<String> source, String status,
+                             Optional<NextAiringEpisode> nextAiringEpisode){
 
 
 

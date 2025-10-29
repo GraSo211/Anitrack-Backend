@@ -47,4 +47,6 @@ public class AnimeEntity {
     private LocalDate startDate;
 
     private int averageEpisodeDuration;
+
+    private boolean adult;
 }

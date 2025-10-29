@@ -5,6 +5,7 @@ import com.graso.anitrack.anime.infrastructure.anilist.dto.ResponseAniListDto;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Component
 public class AniListAnimeMapper {
@@ -13,29 +14,37 @@ public class AniListAnimeMapper {
 
         ResponseAniListDto.Data.Media media = response.data().media();
 
-        LocalDate startDate = media.startDate() != null
-                ? LocalDate.of(
-                media.startDate().year(),
-                media.startDate().month(),
-                media.startDate().day()
-        )
-                : null;
+        Optional<LocalDate> startDate =
+                media.startDate()
+                        .map(sd -> LocalDate.of(sd.year(), sd.month(), sd.day()));
+
+        Optional<String> image =
+                media.coverImage()
+                        .map(ResponseAniListDto.Data.CoverImage::extraLarge);
 
         return new Anime(
                 media.id(),
                 media.idMal(),
+
                 media.title().romaji(),
                 media.description(),
                 media.status(),
+
                 media.bannerImage(),
+                image,
+
+                media.genres(),
+
                 media.averageScore(),
                 media.popularity(),
-                media.genres(),
-                media.coverImage() != null ? media.coverImage().extraLarge() : null,
+
                 media.source(),
+
                 media.episodes(),
                 startDate,
-                media.duration()
+                media.duration(),
+
+                media.isAdult()
         );
     }
 }

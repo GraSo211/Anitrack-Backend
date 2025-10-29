@@ -1,19 +1,30 @@
 package com.graso.anitrack.user.infrastructure.database.mapper;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingConstants;
-import org.mapstruct.ReportingPolicy;
+
 
 import com.graso.anitrack.user.domain.User;
 import com.graso.anitrack.user.infrastructure.database.entity.UserEntity;
+import org.springframework.stereotype.Component;
 
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, unmappedTargetPolicy = ReportingPolicy.ERROR)
-public interface UserEntityMapper {
+@Component
+public class UserEntityMapper {
 
-    @Mapping(target = "authorities", ignore = true)
-    UserEntity mapToUserEntity(User user);
+    public UserEntity mapToUserEntity(User user){
+        UserEntity userEntity = new UserEntity(
+                user.getId(), user.getUsername(), user.getEmail(), user.getPassword(), user.getRole()
+        );
+        return  userEntity;
+    }
 
-    User mapToUser(UserEntity userEntity);
+    public User mapToUser(UserEntity userEntity){
+        User user = User.builder()
+                .id(userEntity.getId())
+                .username(userEntity.getUsername())
+                .email(userEntity.getEmail())
+                .password(userEntity.getPassword())
+                .role(userEntity.getRole())
+                .build();
+        return user;
+    };
 }

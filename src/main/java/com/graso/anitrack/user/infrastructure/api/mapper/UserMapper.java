@@ -1,8 +1,5 @@
 package com.graso.anitrack.user.infrastructure.api.mapper;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingConstants;
-import org.mapstruct.ReportingPolicy;
 
 import com.graso.anitrack.user.application.command.login.LoginUserRequest;
 import com.graso.anitrack.user.application.command.login.LoginUserResponse;
@@ -11,17 +8,31 @@ import com.graso.anitrack.user.application.command.register.RegisterUserResponse
 import com.graso.anitrack.user.infrastructure.api.dto.LoginRequestDto;
 import com.graso.anitrack.user.infrastructure.api.dto.RegisterRequestDto;
 import com.graso.anitrack.user.infrastructure.api.dto.TokenResponseDto;
+import org.springframework.stereotype.Component;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, unmappedTargetPolicy = ReportingPolicy.ERROR)
-public interface UserMapper {
-    LoginUserRequest mapToLoginRequest(LoginRequestDto loginRequestDto);
+@Component
+public class UserMapper {
+    public LoginUserRequest mapToLoginRequest(LoginRequestDto loginRequestDto){
+        LoginUserRequest loginUserRequest = new LoginUserRequest(loginRequestDto.getEmail(),loginRequestDto.getPassword());
+        return loginUserRequest;
+    }
 
-    RegisterUserRequest mapToRegisterRequest(RegisterRequestDto registerRequestDto);
+    public RegisterUserRequest mapToRegisterRequest(RegisterRequestDto registerRequestDto){
+        RegisterUserRequest registerUserRequest = new RegisterUserRequest(registerRequestDto.getUsername(),
+                registerRequestDto.getEmail(),registerRequestDto.getPassword());
+        return registerUserRequest;
+    };
 
-    TokenResponseDto mapToTokenResponseDto(LoginUserResponse loginUserResponse);
+    public TokenResponseDto mapToTokenResponseDto(LoginUserResponse loginUserResponse){
+        TokenResponseDto tokenResponseDto = new TokenResponseDto(loginUserResponse.getToken());
+        return tokenResponseDto;
+    };
 
     
 
-    TokenResponseDto mapToTokenResponseDto(RegisterUserResponse registerUserResponse);
+    public TokenResponseDto mapToTokenResponseDto(RegisterUserResponse registerUserResponse){
+        TokenResponseDto tokenResponseDto = new TokenResponseDto(registerUserResponse.getToken());
+        return tokenResponseDto;
+    };
    
 }

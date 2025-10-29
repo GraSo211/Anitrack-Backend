@@ -3,6 +3,9 @@ package com.graso.anitrack.user.infrastructure.database.entity;
 import java.util.Collection;
 import java.util.List;
 
+import lombok.AllArgsConstructor;
+import org.hibernate.annotations.AnyKeyJavaClass;
+import org.hibernate.internal.build.AllowNonPortable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,6 +24,7 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "users")
+@AllArgsConstructor
 public class UserEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
