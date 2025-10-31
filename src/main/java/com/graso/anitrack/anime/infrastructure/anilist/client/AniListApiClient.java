@@ -1,7 +1,7 @@
 package com.graso.anitrack.anime.infrastructure.anilist.client;
 
 
-import com.graso.anitrack.anime.domain.model.Anime;
+import com.graso.anitrack.anime.domain.model.Media;
 import com.graso.anitrack.anime.infrastructure.anilist.dto.PostQueryDto;
 import com.graso.anitrack.anime.infrastructure.anilist.dto.ResponseAniListDto;
 import com.graso.anitrack.anime.infrastructure.mapper.AniListAnimeMapper;
@@ -19,42 +19,78 @@ public class AniListApiClient {
     private AniListAnimeMapper aniListAnimeMapper;
 
 
-    public Anime fetchAnimeById(Long id){
+    public Media fetchAnimeById(Long id){
         final String query=
                 """
-                     query($id:Int) {
-                           Media(id: $id) {
-                             id
-                             idMal
-                             title {
-                               romaji
-                             }
-                             coverImage {
-                               extraLarge
-                               large
-                             }
-                             description
-                             bannerImage
-                             episodes
-                             startDate {
-                               year
-                               month
-                               day
-                             }
-                             duration
-                             isAdult
-                             genres
-                             averageScore
-                             popularity
-                             source
-                             status
-                             nextAiringEpisode {
-                               airingAt
-                               id
-                               episode
-                             }
-                           }
-                         }   
+                 query($id:Int) {
+                   Media(id: $id) {
+                     id
+                     idMal
+                     title {
+                       romaji
+                       english
+                     }
+                     status
+                     description
+                     startDate{
+                        year
+                        month
+                        day
+                     }
+                     endDate{
+                        year
+                        month
+                        day
+                     }
+                     season
+                     seasonYear
+                     episodes
+                     duration
+                     countryOfOrigin
+                     source
+                     trailer{
+                         id
+                         site
+                         thumbnail
+                     }
+                     coverImage{
+                        extraLarge
+                        large
+                        medium
+                        color
+                     }
+                     bannerImage
+                     genres
+                     synonyms
+                     averageScore
+                     popularity
+                     relations {
+                       edges {
+                         relationType
+                         node {
+                           id
+                         }
+                       }
+                     }
+                     studios{
+                        edges{
+                            isMain
+                            node{
+                                id
+                                name
+                            }
+                        }
+                     }
+                     isAdult
+                     nextAiringEpisode{
+                        id
+                        airingAt
+                        timeUntilAiring
+                        episode
+                        mediaId
+                     }
+                   }
+                 }   
                 """;
         PostQueryDto postQueryDto = new PostQueryDto(query, Map.of("id", id.longValue()));
         Mono<ResponseAniListDto> responseDtoMono = webClientBuilder.build()

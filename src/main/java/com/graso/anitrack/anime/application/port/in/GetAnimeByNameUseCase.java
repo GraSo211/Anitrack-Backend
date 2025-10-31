@@ -2,8 +2,8 @@ package com.graso.anitrack.anime.application.port.in;
 
 import java.util.Optional;
 
-import com.graso.anitrack.anime.domain.model.Anime;
+import com.graso.anitrack.anime.domain.model.Media;
 
 public interface GetAnimeByNameUseCase {
-    Optional<Anime> getByName(String name);
+    Optional<Media> getByName(String name);
 }

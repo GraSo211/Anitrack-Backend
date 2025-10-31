@@ -2,8 +2,8 @@ package com.graso.anitrack.anime.application.port.in;
 
 import java.util.List;
 
-import com.graso.anitrack.anime.domain.model.Anime;
+import com.graso.anitrack.anime.domain.model.Media;
 
 public interface GetAnimesUseCase {
-    List<Anime> get(int quantity, String type, String status, String sort);
+    List<Media> get(int quantity, String type, String status, String sort);
 }

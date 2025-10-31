@@ -1,7 +1,7 @@
 package com.graso.anitrack.anime.application.port.in;
 
-import com.graso.anitrack.anime.domain.model.Anime;
+import com.graso.anitrack.anime.domain.model.Media;
 
 public interface GetAnimeByIdUseCase {
-    Anime getById(Long id);
+    Media getById(Long id);
 }
