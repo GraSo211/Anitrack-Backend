@@ -4,18 +4,16 @@ import com.graso.anitrack.anime.domain.model.*;
 import com.graso.anitrack.anime.infrastructure.anilist.dto.ResponseAniListDto;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Component
 public class AniListAnimeMapper {
 
-    public Media toDomain(ResponseAniListDto response) {
+    public Anime toDomain(ResponseAniListDto response) {
 
         ResponseAniListDto.Data.Media dto = response.data().media();
 
-        return new Media(
+        return new Anime(
                 dto.id().intValue(),
                 dto.idMal() != null ? dto.idMal().intValue() : null,
 
@@ -133,6 +131,7 @@ public class AniListAnimeMapper {
                         .map(edge -> new MediaRelation(
                                 edge.node().id().intValue(),
                                 TypeMediaRelation.valueOf(edge.relationType()),
+                                edge.node().type(),
                                 edge.node().title().romaji(),
                                 edge.node().coverImage().extraLarge()
                         ))

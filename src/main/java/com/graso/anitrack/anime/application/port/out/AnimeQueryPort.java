@@ -2,12 +2,12 @@ package com.graso.anitrack.anime.application.port.out;
 
 import java.util.List;
 
-import com.graso.anitrack.anime.domain.model.Media;
+import com.graso.anitrack.anime.domain.model.Anime;
 
 public interface AnimeQueryPort {
-    Media findById(Long id);
-    Media findByName(String name);
-    List<Media> findByGenre(String genre);
-    List<Media> findPopular(int limit);
-    List<Media> findUpcoming(int limit);
+    Anime findById(Long id);
+    Anime findByName(String name);
+    List<Anime> findByGenre(String genre);
+    List<Anime> findPopular(int limit);
+    List<Anime> findUpcoming(int limit);
 }

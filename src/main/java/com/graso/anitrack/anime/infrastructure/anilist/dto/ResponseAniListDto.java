@@ -1,6 +1,7 @@
 package com.graso.anitrack.anime.infrastructure.anilist.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.graso.anitrack.anime.domain.model.MediaType;
 
 import java.util.Date;
 import java.util.List;
@@ -16,6 +17,7 @@ public record ResponseAniListDto(Data data) {
                 Long id,
                 Long idMal,
 
+                MediaType type,
                 Title title,
 
                 String description,

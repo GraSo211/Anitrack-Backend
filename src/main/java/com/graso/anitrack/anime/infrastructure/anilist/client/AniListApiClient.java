@@ -1,7 +1,7 @@
 package com.graso.anitrack.anime.infrastructure.anilist.client;
 
 
-import com.graso.anitrack.anime.domain.model.Media;
+import com.graso.anitrack.anime.domain.model.Anime;
 import com.graso.anitrack.anime.infrastructure.anilist.dto.PostQueryDto;
 import com.graso.anitrack.anime.infrastructure.anilist.dto.ResponseAniListDto;
 import com.graso.anitrack.anime.infrastructure.mapper.AniListAnimeMapper;
@@ -19,7 +19,7 @@ public class AniListApiClient {
     private AniListAnimeMapper aniListAnimeMapper;
 
 
-    public Media fetchAnimeById(Long id){
+    public Anime fetchAnimeById(Long id){
         final String query=
                 """
                  query($id:Int) {

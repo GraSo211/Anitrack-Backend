@@ -16,4 +16,8 @@ public record MediaRelations(
     public boolean isEmpty() {
         return items.isEmpty();
     }
+
+    public MediaRelations onlyAnime(){
+        return new MediaRelations(items.stream().filter(i -> i.relatedType() == MediaType.ANIME).toList());
+    }
 }
