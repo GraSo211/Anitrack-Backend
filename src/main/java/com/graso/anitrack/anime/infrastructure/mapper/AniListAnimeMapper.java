@@ -1,7 +1,8 @@
 package com.graso.anitrack.anime.infrastructure.mapper;
 
 import com.graso.anitrack.anime.domain.model.*;
-import com.graso.anitrack.anime.infrastructure.anilist.dto.ResponseAniListDto;
+import com.graso.anitrack.anime.infrastructure.anilist.dto.ResponseFetchByIdAniListDto;
+import com.graso.anitrack.anime.infrastructure.anilist.dto.ResponseFetchByIdAniListDto;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -9,9 +10,9 @@ import java.util.List;
 @Component
 public class AniListAnimeMapper {
 
-    public Anime toDomain(ResponseAniListDto response) {
+    public Anime toDomain(ResponseFetchByIdAniListDto response) {
 
-        ResponseAniListDto.Data.Media dto = response.data().media();
+        ResponseFetchByIdAniListDto.Data.Media dto = response.data().media();
 
         return new Anime(
                 dto.id().intValue(),
@@ -58,7 +59,7 @@ public class AniListAnimeMapper {
     // MAPPERS
     // =========================
 
-    private MediaTitle mapTitle(ResponseAniListDto.Data.Title title) {
+    private MediaTitle mapTitle(ResponseFetchByIdAniListDto.Data.Title title) {
         if (title == null) return null;
         return new MediaTitle(title.romaji(), title.english());
     }
@@ -75,7 +76,7 @@ public class AniListAnimeMapper {
         return source != null ? MediaSource.valueOf(source) : null;
     }
 
-    private FuzzyDate mapFuzzyDate(ResponseAniListDto.Data.StartDate date) {
+    private FuzzyDate mapFuzzyDate(ResponseFetchByIdAniListDto.Data.StartDate date) {
         if (date == null) return null;
         if (date.year() == null || date.month() == null || date.day() == null) {
             return null;
@@ -83,7 +84,7 @@ public class AniListAnimeMapper {
         return new FuzzyDate(date.year(), date.month(), date.day());
     }
 
-    private FuzzyDate mapFuzzyDate(ResponseAniListDto.Data.EndDate date) {
+    private FuzzyDate mapFuzzyDate(ResponseFetchByIdAniListDto.Data.EndDate date) {
         if (date == null) return null;
         if (date.year() == null || date.month() == null || date.day() == null) {
             return null;
@@ -91,7 +92,7 @@ public class AniListAnimeMapper {
         return new FuzzyDate(date.year(), date.month(), date.day());
     }
 
-    private MediaTrailer mapTrailer(ResponseAniListDto.Data.Trailer trailer) {
+    private MediaTrailer mapTrailer(ResponseFetchByIdAniListDto.Data.Trailer trailer) {
         if (trailer == null) return null;
         return new MediaTrailer(
                 trailer.id(),
@@ -100,7 +101,7 @@ public class AniListAnimeMapper {
         );
     }
 
-    private MediaCoverImage mapCoverImage(ResponseAniListDto.Data.CoverImage cover) {
+    private MediaCoverImage mapCoverImage(ResponseFetchByIdAniListDto.Data.CoverImage cover) {
         if (cover == null) return null;
         return new MediaCoverImage(
                 cover.extraLarge(),
@@ -110,7 +111,7 @@ public class AniListAnimeMapper {
         );
     }
 
-    private AiringSchedule mapAiringSchedule(ResponseAniListDto.Data.NextAiringEpisode airing) {
+    private AiringSchedule mapAiringSchedule(ResponseFetchByIdAniListDto.Data.NextAiringEpisode airing) {
         if (airing == null) return null;
         return new AiringSchedule(
                 airing.id(),
@@ -121,7 +122,7 @@ public class AniListAnimeMapper {
         );
     }
 
-    private MediaRelations mapRelations(ResponseAniListDto.Data.Relations relations) {
+    private MediaRelations mapRelations(ResponseFetchByIdAniListDto.Data.Relations relations) {
         if (relations == null || relations.edges() == null) {
             return MediaRelations.empty();
         }
@@ -139,11 +140,11 @@ public class AniListAnimeMapper {
         );
     }
 
-    private String extractMainStudio(ResponseAniListDto.Data.Studios studios) {
+    private String extractMainStudio(ResponseFetchByIdAniListDto.Data.Studios studios) {
         if (studios == null || studios.edges() == null) return null;
 
         return studios.edges().stream()
-                .filter(ResponseAniListDto.Data.StudioEdge::isMain)
+                .filter(ResponseFetchByIdAniListDto.Data.StudioEdge::isMain)
                 .map(edge -> edge.node().name())
                 .findFirst()
                 .orElse(null);

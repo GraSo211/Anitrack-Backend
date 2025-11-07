@@ -7,7 +7,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import java.util.Map;
+
 @Primary
 @Component
 @AllArgsConstructor
@@ -20,22 +21,9 @@ public class AniListAnimeQueryAdapter implements AnimeQueryPort {
     }
 
     @Override
-    public Anime findByName(String name) {
-        return null;
+    public Map<String, String> getBannerImage() {
+        return aniListApiClient.fetchBannerImage();
     }
 
-    @Override
-    public List<Anime> findByGenre(String genre) {
-        return List.of();
-    }
 
-    @Override
-    public List<Anime> findPopular(int limit) {
-        return List.of();
-    }
-
-    @Override
-    public List<Anime> findUpcoming(int limit) {
-        return List.of();
-    }
 }

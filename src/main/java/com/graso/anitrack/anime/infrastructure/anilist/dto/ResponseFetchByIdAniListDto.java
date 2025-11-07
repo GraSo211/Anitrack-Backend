@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-public record ResponseAniListDto(Data data) {
+public record ResponseFetchByIdAniListDto(Data data) {
 
     public record Data(
             @JsonProperty("Media") Media media
