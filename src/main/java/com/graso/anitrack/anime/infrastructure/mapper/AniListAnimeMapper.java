@@ -2,7 +2,7 @@ package com.graso.anitrack.anime.infrastructure.mapper;
 
 import com.graso.anitrack.anime.domain.model.*;
 import com.graso.anitrack.anime.infrastructure.anilist.dto.ResponseFetchByIdAniListDto;
-import com.graso.anitrack.anime.infrastructure.anilist.dto.ResponseFetchByIdAniListDto;
+import com.graso.anitrack.anime.infrastructure.anilist.dto.ResponseTopSeasonAnimeDto;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -49,15 +49,32 @@ public class AniListAnimeMapper {
 
                 extractMainStudio(dto.studios()),
 
-                dto.isAdult() != null? dto.isAdult() : false,
+                dto.isAdult() != null ? dto.isAdult() : false,
 
                 mapAiringSchedule(dto.nextAiringEpisode())
         );
     }
 
+    public AnimeTopSeason toAnimeTopSeason(ResponseTopSeasonAnimeDto.Data.AnimeData.Media response) {
+
+        return new AnimeTopSeason(
+                response.id(),
+                mapTitle(response.title()),
+                response.bannerImage(),
+                response.meanScore(),
+                response.popularity()
+        );
+
+    }
+
     // =========================
     // MAPPERS
     // =========================
+
+    private MediaTitle mapTitle(ResponseTopSeasonAnimeDto.Data.AnimeData.Media.Title title) {
+        if (title == null) return null;
+        return new MediaTitle(title.romaji(), title.english());
+    }
 
     private MediaTitle mapTitle(ResponseFetchByIdAniListDto.Data.Title title) {
         if (title == null) return null;

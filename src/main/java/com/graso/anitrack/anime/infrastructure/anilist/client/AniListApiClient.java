@@ -2,10 +2,12 @@ package com.graso.anitrack.anime.infrastructure.anilist.client;
 
 
 import com.graso.anitrack.anime.domain.model.Anime;
+import com.graso.anitrack.anime.domain.model.AnimeTopSeason;
 import com.graso.anitrack.anime.domain.model.MediaSeason;
 import com.graso.anitrack.anime.infrastructure.anilist.dto.PostQueryDto;
 import com.graso.anitrack.anime.infrastructure.anilist.dto.ResponseBannerImageAniListDto;
 import com.graso.anitrack.anime.infrastructure.anilist.dto.ResponseFetchByIdAniListDto;
+import com.graso.anitrack.anime.infrastructure.anilist.dto.ResponseTopSeasonAnimeDto;
 import com.graso.anitrack.anime.infrastructure.mapper.AniListAnimeMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -13,8 +15,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Component
 @AllArgsConstructor
@@ -159,4 +160,82 @@ public class AniListApiClient {
 
         return Map.of("link", imageLink);
     }
+
+    public AnimeTopSeason findTopAnimeSeason() {
+        String actualSeason = MediaSeason.current().toString();
+        int actualYear = LocalDate.now().getYear();
+        final String query = String.format("""
+                   query{
+                        topScored: Page(perPage: 5) {
+                            media(
+                            season: %s
+                            seasonYear: %d
+                            type: ANIME
+                            sort: SCORE_DESC
+                            ) {
+                            id
+                            title {
+                                romaji
+                                english
+                            }
+                            bannerImage
+                            meanScore
+                            popularity
+                            }
+                        }
+                
+                        topPopular: Page(perPage: 5) {
+                            media(
+                            season: %s
+                            seasonYear: %d
+                            type: ANIME
+                            sort: POPULARITY_DESC
+                            ) {
+                            id
+                            title {
+                                romaji
+                                english
+                            }
+                            bannerImage
+                            meanScore
+                            popularity
+                            }
+                        }
+                
+                    }
+                """, actualSeason, actualYear, actualSeason, actualYear
+        );
+        PostQueryDto postQueryDto = new PostQueryDto(query, null);
+        Mono<ResponseTopSeasonAnimeDto> responseDtoMono = webClientBuilder.build()
+                .post()
+                .uri("https://graphql.anilist.co")
+                .bodyValue(postQueryDto)
+                .retrieve()
+                .bodyToMono(ResponseTopSeasonAnimeDto.class);
+        ResponseTopSeasonAnimeDto responseTopSeasonAnimeDto = responseDtoMono.block();
+
+        if (responseTopSeasonAnimeDto == null || responseTopSeasonAnimeDto.data() == null) {
+            return null;
+        }
+        ResponseTopSeasonAnimeDto.Data.AnimeData topScored = responseTopSeasonAnimeDto.data().topScored();
+        ResponseTopSeasonAnimeDto.Data.AnimeData topPopular = responseTopSeasonAnimeDto.data().topPopular();
+        List<ResponseTopSeasonAnimeDto.Data.AnimeData.Media> listAnime = new ArrayList<>();
+        listAnime.addAll(topScored.media());
+        listAnime.addAll(topPopular.media());
+        listAnime = listAnime.stream().filter(i -> i.bannerImage() != null).toList();
+        listAnime = listAnime.stream().sorted(
+                Comparator
+                        .comparing(ResponseTopSeasonAnimeDto.Data.AnimeData.Media::meanScore,
+                                Comparator.nullsLast(Comparator.reverseOrder()))
+                        .thenComparing(ResponseTopSeasonAnimeDto.Data.AnimeData.Media::popularity,
+                                Comparator.nullsLast(Comparator.reverseOrder()))
+        ).toList();
+
+        ResponseTopSeasonAnimeDto.Data.AnimeData.Media topSeasonAnime = listAnime.stream().findFirst().orElse(null);
+        if (topSeasonAnime == null) {
+            return null;
+        }
+        return aniListAnimeMapper.toAnimeTopSeason(topSeasonAnime);
+    }
 }
+
