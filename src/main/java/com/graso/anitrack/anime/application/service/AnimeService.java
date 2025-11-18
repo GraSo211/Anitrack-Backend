@@ -1,19 +1,22 @@
 package com.graso.anitrack.anime.application.service;
 
 import com.graso.anitrack.anime.application.port.in.GetAnimeByIdUseCase;
+import com.graso.anitrack.anime.application.port.in.GetAnimeByNameUseCase;
 import com.graso.anitrack.anime.application.port.in.GetHomepageBannerAnimeUseCase;
 import com.graso.anitrack.anime.application.port.in.GetTopSeasonAnimeUseCase;
 import com.graso.anitrack.anime.application.port.out.AnimeQueryPort;
 import com.graso.anitrack.anime.domain.model.Anime;
+import com.graso.anitrack.anime.domain.model.AnimeName;
 import com.graso.anitrack.anime.domain.model.AnimeTopSeason;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
 @AllArgsConstructor
-public class AnimeService implements GetAnimeByIdUseCase, GetHomepageBannerAnimeUseCase, GetTopSeasonAnimeUseCase {
+public class AnimeService implements GetAnimeByIdUseCase, GetHomepageBannerAnimeUseCase, GetTopSeasonAnimeUseCase, GetAnimeByNameUseCase {
     AnimeQueryPort animeQueryPort;
 
     @Override
@@ -33,5 +36,10 @@ public class AnimeService implements GetAnimeByIdUseCase, GetHomepageBannerAnime
     @Override
     public AnimeTopSeason getTopSeasonAnime() {
         return animeQueryPort.findTopSeasonAnime();
+    }
+
+    @Override
+    public List<AnimeName> getByName(String name) {
+        return animeQueryPort.findByName(name);
     }
 }

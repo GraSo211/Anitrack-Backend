@@ -2,6 +2,7 @@ package com.graso.anitrack.anime.infrastructure.mapper;
 
 import com.graso.anitrack.anime.domain.model.*;
 import com.graso.anitrack.anime.infrastructure.anilist.dto.ResponseFetchByIdAniListDto;
+import com.graso.anitrack.anime.infrastructure.anilist.dto.ResponseFetchByNameAniListDto;
 import com.graso.anitrack.anime.infrastructure.anilist.dto.ResponseTopSeasonAnimeDto;
 import org.springframework.stereotype.Component;
 
@@ -65,6 +66,15 @@ public class AniListAnimeMapper {
                 response.popularity()
         );
 
+    }
+
+    public AnimeName toAnimeName(ResponseFetchByNameAniListDto.Data.Page.Media response) {
+        return new AnimeName(
+                response.id(),
+                response.idMal(),
+                response.title(),
+                response.coverImage()
+        );
     }
 
     // =========================

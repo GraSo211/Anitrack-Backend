@@ -2,12 +2,10 @@ package com.graso.anitrack.anime.infrastructure.anilist.client;
 
 
 import com.graso.anitrack.anime.domain.model.Anime;
+import com.graso.anitrack.anime.domain.model.AnimeName;
 import com.graso.anitrack.anime.domain.model.AnimeTopSeason;
 import com.graso.anitrack.anime.domain.model.MediaSeason;
-import com.graso.anitrack.anime.infrastructure.anilist.dto.PostQueryDto;
-import com.graso.anitrack.anime.infrastructure.anilist.dto.ResponseBannerImageAniListDto;
-import com.graso.anitrack.anime.infrastructure.anilist.dto.ResponseFetchByIdAniListDto;
-import com.graso.anitrack.anime.infrastructure.anilist.dto.ResponseTopSeasonAnimeDto;
+import com.graso.anitrack.anime.infrastructure.anilist.dto.*;
 import com.graso.anitrack.anime.infrastructure.mapper.AniListAnimeMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -237,5 +235,49 @@ public class AniListApiClient {
         }
         return aniListAnimeMapper.toAnimeTopSeason(topSeasonAnime);
     }
+
+
+    public List<AnimeName> fetchAnimeByName(String name) {
+        final String query = String.format("""
+                      query($search: String){
+                             Page(perPage: 5) {
+                                   media(search: $search, type: ANIME) {
+                                         id
+                                         idMal
+                                         title {
+                                               romaji
+                                               english
+                                         }
+                                         coverImage {
+                                               extraLarge
+                                               large
+                                               medium
+                                               color
+                                         }
+                                   }
+                             }
+                      }
+                """, name);
+        PostQueryDto postQueryDto = new PostQueryDto(query, Map.of("search", name));
+        Mono<ResponseFetchByNameAniListDto> responseDtoMono = webClientBuilder.build()
+                .post()
+                .uri("https://graphql.anilist.co")
+                .bodyValue(postQueryDto)
+                .retrieve()
+                .bodyToMono(ResponseFetchByNameAniListDto.class);
+        ResponseFetchByNameAniListDto responseAniListDto = responseDtoMono.block();
+        if (responseAniListDto == null || responseAniListDto.data() == null) {
+            return null;
+        }
+        List<AnimeName> animesByName = new ArrayList<>();
+        animesByName = responseAniListDto.data()
+                .page()
+                .media()
+                .stream()
+                .map(anime -> aniListAnimeMapper.toAnimeName(anime))
+                .toList();
+        return animesByName;
+    }
+
 }
 

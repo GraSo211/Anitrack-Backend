@@ -2,12 +2,14 @@ package com.graso.anitrack.anime.infrastructure.anilist.adapter;
 
 import com.graso.anitrack.anime.application.port.out.AnimeQueryPort;
 import com.graso.anitrack.anime.domain.model.Anime;
+import com.graso.anitrack.anime.domain.model.AnimeName;
 import com.graso.anitrack.anime.domain.model.AnimeTopSeason;
 import com.graso.anitrack.anime.infrastructure.anilist.client.AniListApiClient;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
 
 @Primary
@@ -29,6 +31,11 @@ public class AniListAnimeQueryAdapter implements AnimeQueryPort {
     @Override
     public AnimeTopSeason findTopSeasonAnime() {
         return aniListApiClient.findTopAnimeSeason();
+    }
+
+    @Override
+    public List<AnimeName> findByName(String name) {
+        return aniListApiClient.fetchAnimeByName(name);
     }
 
 
