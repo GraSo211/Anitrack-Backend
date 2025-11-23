@@ -10,5 +10,5 @@ public class Episode {
     String title;
     boolean filler;
     boolean recap;
-    
+
 }

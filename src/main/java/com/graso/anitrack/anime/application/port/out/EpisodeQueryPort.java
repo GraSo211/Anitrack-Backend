@@ -1,9 +1,7 @@
 package com.graso.anitrack.anime.application.port.out;
 
-import com.graso.anitrack.anime.domain.model.Episode;
-
-import java.util.List;
+import com.graso.anitrack.anime.application.dto.EpisodePage;
 
 public interface EpisodeQueryPort {
-    List<Episode> findAllEpisodesOfAnime(int animeId);
+    EpisodePage findAllEpisodesOfAnime(int animeId);
 }

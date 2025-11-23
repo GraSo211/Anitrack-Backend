@@ -1,10 +1,9 @@
 package com.graso.anitrack.anime.application.service;
 
-import com.graso.anitrack.anime.application.port.in.GetAnimeByIdUseCase;
-import com.graso.anitrack.anime.application.port.in.GetAnimeByNameUseCase;
-import com.graso.anitrack.anime.application.port.in.GetHomepageBannerAnimeUseCase;
-import com.graso.anitrack.anime.application.port.in.GetTopSeasonAnimeUseCase;
+import com.graso.anitrack.anime.application.dto.EpisodePage;
+import com.graso.anitrack.anime.application.port.in.*;
 import com.graso.anitrack.anime.application.port.out.AnimeQueryPort;
+import com.graso.anitrack.anime.application.port.out.EpisodeQueryPort;
 import com.graso.anitrack.anime.domain.model.Anime;
 import com.graso.anitrack.anime.domain.model.AnimeName;
 import com.graso.anitrack.anime.domain.model.AnimeTopSeason;
@@ -16,8 +15,9 @@ import java.util.Map;
 
 @Service
 @AllArgsConstructor
-public class AnimeService implements GetAnimeByIdUseCase, GetHomepageBannerAnimeUseCase, GetTopSeasonAnimeUseCase, GetAnimeByNameUseCase {
+public class AnimeService implements GetAnimeByIdUseCase, GetHomepageBannerAnimeUseCase, GetTopSeasonAnimeUseCase, GetAnimeByNameUseCase, GetAllEpisodesAnimeUseCase {
     AnimeQueryPort animeQueryPort;
+    EpisodeQueryPort episodeQueryPort;
 
     @Override
     public Anime getById(Long id) {
@@ -41,5 +41,10 @@ public class AnimeService implements GetAnimeByIdUseCase, GetHomepageBannerAnime
     @Override
     public List<AnimeName> getByName(String name) {
         return animeQueryPort.findByName(name);
+    }
+
+    @Override
+    public EpisodePage getAllEpisodesOfAnime(int animeId) {
+        return episodeQueryPort.findAllEpisodesOfAnime(animeId);
     }
 }

@@ -1,26 +1,27 @@
 package com.graso.anitrack.anime.infrastructure.jikan.client;
 
-import com.graso.anitrack.anime.domain.model.Episode;
+import com.graso.anitrack.anime.application.dto.EpisodePage;
+import com.graso.anitrack.anime.infrastructure.jikan.dto.ResponseEpisodesJikanDto;
+import com.graso.anitrack.anime.infrastructure.mapper.JikanAnimeMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
-
-import java.util.List;
 
 @Component
 @AllArgsConstructor
 public class JikanApiClient {
     private WebClient.Builder webClientBuilder;
+    private JikanAnimeMapper jikanAnimeMapper;
 
-    public List<Episode> fetchAllEpisodesOfAnime(int animeId) {
+    public EpisodePage fetchAllEpisodesOfAnime(int animeId) {
         String url = "https://api.jikan.moe/v4/anime/" + animeId + "/episodes";
-        return webClientBuilder.build()
+        ResponseEpisodesJikanDto responseEpisodesJikanDtoMono = webClientBuilder.build()
                 .get()
                 .uri(url)
                 .retrieve()
-                .bodyToFlux(Episode.class)
-                .collectList()
+                .bodyToMono(ResponseEpisodesJikanDto.class)
                 .block();
 
+        return jikanAnimeMapper.toEpisodePage(responseEpisodesJikanDtoMono);
     }
 }

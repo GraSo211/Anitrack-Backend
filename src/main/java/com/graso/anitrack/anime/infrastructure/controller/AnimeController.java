@@ -1,9 +1,7 @@
 package com.graso.anitrack.anime.infrastructure.controller;
 
-import com.graso.anitrack.anime.application.port.in.GetAnimeByIdUseCase;
-import com.graso.anitrack.anime.application.port.in.GetAnimeByNameUseCase;
-import com.graso.anitrack.anime.application.port.in.GetHomepageBannerAnimeUseCase;
-import com.graso.anitrack.anime.application.port.in.GetTopSeasonAnimeUseCase;
+import com.graso.anitrack.anime.application.dto.EpisodePage;
+import com.graso.anitrack.anime.application.port.in.*;
 import com.graso.anitrack.anime.domain.model.Anime;
 import com.graso.anitrack.anime.domain.model.AnimeName;
 import com.graso.anitrack.anime.domain.model.AnimeTopSeason;
@@ -24,6 +22,7 @@ public class AnimeController {
     private final GetHomepageBannerAnimeUseCase getHomepageBannerAnimeUseCase;
     private final GetTopSeasonAnimeUseCase getTopSeasonAnimeUseCase;
     private final GetAnimeByNameUseCase getAnimeByNameUseCase;
+    private final GetAllEpisodesAnimeUseCase getAllEpisodesAnimeUseCase;
 
     @GetMapping("/{id}")
     public ResponseEntity<Anime> getAnimeById(@PathVariable Long id) {
@@ -48,4 +47,11 @@ public class AnimeController {
         List<AnimeName> animesByName = getAnimeByNameUseCase.getByName(name);
         return new ResponseEntity<>(animesByName, HttpStatus.OK);
     }
+
+    @GetMapping("/{animeId}/episodes")
+    public ResponseEntity<EpisodePage> getAllEpisodesOfAnime(@PathVariable int animeId) {
+        EpisodePage episodes = getAllEpisodesAnimeUseCase.getAllEpisodesOfAnime(animeId);
+        return new ResponseEntity<>(episodes, HttpStatus.OK);
+    }
+
 }
