@@ -1,3 +1,18 @@
 spring:
   application:
     name: AniTrack
+  docker:
+    compose:
+      enabled: false
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/anitrack
+    username: postgres
+    password: GramaSola211
+
+
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
