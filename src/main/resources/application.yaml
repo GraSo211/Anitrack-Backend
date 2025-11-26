@@ -10,7 +10,11 @@ spring:
     username: postgres
     password: GramaSola211
 
-
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: https://www.googleapis.com/oauth2/v3/certs
 
   jpa:
     hibernate:

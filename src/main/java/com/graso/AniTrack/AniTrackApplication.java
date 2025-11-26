@@ -1,4 +1,4 @@
-package com.graso.AniTrack;
+package com.graso.anitrack;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
