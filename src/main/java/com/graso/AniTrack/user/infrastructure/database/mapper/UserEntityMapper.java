@@ -1,4 +1,4 @@
-package com.graso.anitrack.user.infrastructure.mapper;
+package com.graso.anitrack.user.infrastructure.database.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
