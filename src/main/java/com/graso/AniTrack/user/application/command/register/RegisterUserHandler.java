@@ -26,13 +26,14 @@ public class RegisterUserHandler implements RequestHandler<RegisterUserRequest, 
         }
         User user = User.builder()
                 .username(request.getUsername())
+                .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
                 .build();
 
 
-        User upsert = userRepository.upsert(user);
-        String token = authenticationPort.authenticate(upsert);
+        userRepository.upsert(user);
+        String token = authenticationPort.authenticate(request.getEmail(), request.getPassword());
 
         return new RegisterUserResponse(token);
     }
