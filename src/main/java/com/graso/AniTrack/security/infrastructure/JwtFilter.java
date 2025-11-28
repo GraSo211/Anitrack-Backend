@@ -6,6 +6,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -25,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
-
+    private final UserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -50,17 +51,17 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String username = jwtService.getUsername(token);
 
-        if(username == null && SecurityContextHolder.getContext().getAuthentication() == null){
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+        boolean isTokenValid = jwtService.isTokenValid(token, userDetails);
+
+        if(!isTokenValid && SecurityContextHolder.getContext().getAuthentication() == null){
             log.warn("Invalid token or user already authenticanted");
             filterChain.doFilter(request, response);
             return;
         }
         log.info("JWT Token found: {}", token);
-        UserDetails userDetails = User.withDefaultPasswordEncoder()
-                .username(username)
-                .password("password")
-                .roles("USER")
-                .build();
+       
 
         if(isTokenExpired && canBeRefreshed){
             log.info("JWT Token is expired but can be refreshed");

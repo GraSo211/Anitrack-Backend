@@ -88,7 +88,8 @@ public class JwtService {
         return generateToken(userDetails);
     }
 
-  /*   public String getAuthorities(String token){
-        return getClaim(token, claims -> claims.get("authorities", String.class));
-    } */
+    public boolean isTokenValid(String token, UserDetails userDetails){
+        String username = getUsername(token);
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    }
 }
