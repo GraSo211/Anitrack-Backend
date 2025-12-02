@@ -1,6 +1,5 @@
 package com.graso.anitrack.anime.application.port.in;
 
-import java.util.List;
 import java.util.Optional;
 
 import com.graso.anitrack.anime.domain.model.Anime;
