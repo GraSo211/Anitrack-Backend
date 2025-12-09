@@ -21,4 +21,6 @@ public interface AnimeQueryPort {
     List<AnimeCard> findSeasonTrendAnimes();
 
     List<AnimeCard> findMostValoratedAnimes();
+
+    List<AnimeCard> findAnimesByGenre(String genre);
 }

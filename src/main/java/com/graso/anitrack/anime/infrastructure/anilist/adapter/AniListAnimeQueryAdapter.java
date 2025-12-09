@@ -56,5 +56,10 @@ public class AniListAnimeQueryAdapter implements AnimeQueryPort {
         return aniListApiClient.fetchMostValoratedAnimes();
     }
 
+    @Override
+    public List<AnimeCard> findAnimesByGenre(String genre) {
+        return aniListApiClient.fetchAnimesByGenre(genre);
+    }
+
 
 }
