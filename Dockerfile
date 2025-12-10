@@ -5,9 +5,17 @@ FROM eclipse-temurin:21-jdk AS builder
 WORKDIR /app
 
 
-# copy application files
-COPY . .
 
+# copy application files
+COPY mvnw .
+COPY .mvn .mvn
+COPY pom.xml .
+
+RUN chmod +x mvnw
+
+RUN ./mvnw dependency:go-offline
+
+COPY src src
 # build application with maven:
 RUN ./mvnw clean package -DskipTests
 
