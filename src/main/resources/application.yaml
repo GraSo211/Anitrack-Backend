@@ -4,18 +4,17 @@ spring:
   docker:
     compose:
       enabled: false
-
   datasource:
     url: jdbc:postgresql://localhost:5432/anitrack
     username: postgres
     password: root
+    port: 5431
 
   security:
     oauth2:
       resourceserver:
         jwt:
           jwk-set-uri: https://www.googleapis.com/oauth2/v3/certs
-
   jpa:
     hibernate:
       ddl-auto: update
