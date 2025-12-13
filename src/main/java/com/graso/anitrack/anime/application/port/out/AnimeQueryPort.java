@@ -2,6 +2,7 @@ package com.graso.anitrack.anime.application.port.out;
 
 import com.graso.anitrack.anime.domain.model.Anime;
 import com.graso.anitrack.anime.domain.model.AnimeName;
+import com.graso.anitrack.anime.domain.model.AnimeReleasing;
 import com.graso.anitrack.anime.domain.model.AnimeTopSeason;
 
 import java.util.List;
@@ -16,4 +17,5 @@ public interface AnimeQueryPort {
 
     List<AnimeName> findByName(String name);
 
+    List<AnimeReleasing> findAnimesReleasing();
 }

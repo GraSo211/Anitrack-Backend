@@ -3,6 +3,7 @@ package com.graso.anitrack.anime.infrastructure.mapper;
 import com.graso.anitrack.anime.domain.model.*;
 import com.graso.anitrack.anime.infrastructure.anilist.dto.ResponseFetchByIdAniListDto;
 import com.graso.anitrack.anime.infrastructure.anilist.dto.ResponseFetchByNameAniListDto;
+import com.graso.anitrack.anime.infrastructure.anilist.dto.ResponseReleasingAnimesAniListDto;
 import com.graso.anitrack.anime.infrastructure.anilist.dto.ResponseTopSeasonAnimeDto;
 import org.springframework.stereotype.Component;
 
@@ -74,6 +75,16 @@ public class AniListAnimeMapper {
                 response.idMal(),
                 response.title(),
                 response.coverImage()
+        );
+    }
+
+    public AnimeReleasing toAnimeReleasing(ResponseReleasingAnimesAniListDto.Data.Page.Media response) {
+        return new AnimeReleasing(
+                response.id(),
+                response.idMal(),
+                response.title(),
+                response.coverImage(),
+                response.nextAiringEpisode()
         );
     }
 

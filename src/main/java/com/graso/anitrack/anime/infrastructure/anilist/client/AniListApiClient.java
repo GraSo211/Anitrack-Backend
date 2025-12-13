@@ -1,10 +1,7 @@
 package com.graso.anitrack.anime.infrastructure.anilist.client;
 
 
-import com.graso.anitrack.anime.domain.model.Anime;
-import com.graso.anitrack.anime.domain.model.AnimeName;
-import com.graso.anitrack.anime.domain.model.AnimeTopSeason;
-import com.graso.anitrack.anime.domain.model.MediaSeason;
+import com.graso.anitrack.anime.domain.model.*;
 import com.graso.anitrack.anime.infrastructure.anilist.dto.*;
 import com.graso.anitrack.anime.infrastructure.mapper.AniListAnimeMapper;
 import lombok.AllArgsConstructor;
@@ -277,6 +274,68 @@ public class AniListApiClient {
                 .map(anime -> aniListAnimeMapper.toAnimeName(anime))
                 .toList();
         return animesByName;
+    }
+
+
+    public List<AnimeReleasing> fetchReleasingAnimes() {
+        final String query = """
+                        query ($page: Int, $perPage: Int) {
+                          Page(page: $page, perPage: $perPage) {
+                            pageInfo {
+                              currentPage
+                              lastPage
+                            }
+                            media(type: ANIME, status: RELEASING, isAdult: false) {
+                              id
+                              idMal
+                              title {
+                                romaji
+                                english
+                              }
+                              coverImage {
+                                extraLarge
+                                large
+                                medium
+                                color
+                              }
+                              nextAiringEpisode {
+                                id
+                                airingAt
+                                timeUntilAiring
+                                episode
+                                mediaId
+                              }
+                            }
+                          }
+                        }
+                """;
+        int nPage = 1;
+        int lastPage = 1;
+        List<AnimeReleasing> releasingAnimes = new ArrayList<>();
+        do {
+            PostQueryDto postQueryDto = new PostQueryDto(query, Map.of("page", nPage, "perPage", 50));
+            Mono<ResponseReleasingAnimesAniListDto> responseDtoMono = webClientBuilder.build()
+                    .post()
+                    .uri("https://graphql.anilist.co")
+                    .bodyValue(postQueryDto)
+                    .retrieve()
+                    .bodyToMono(ResponseReleasingAnimesAniListDto.class);
+            ResponseReleasingAnimesAniListDto responseAniListDto = responseDtoMono.block();
+            if (responseAniListDto == null || responseAniListDto.data() == null) {
+                return Collections.emptyList();
+            }
+            lastPage = responseAniListDto.data().page().pageInfo().lastPage();
+            nPage++;
+            releasingAnimes.addAll(responseAniListDto.data()
+                    .page()
+                    .media()
+                    .stream()
+                    .map(anime -> aniListAnimeMapper.toAnimeReleasing(anime))
+                    .toList());
+        }
+        while (nPage <= lastPage);
+
+        return releasingAnimes;
     }
 
 }

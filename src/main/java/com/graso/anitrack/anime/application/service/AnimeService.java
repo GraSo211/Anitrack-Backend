@@ -6,6 +6,7 @@ import com.graso.anitrack.anime.application.port.out.AnimeQueryPort;
 import com.graso.anitrack.anime.application.port.out.EpisodeQueryPort;
 import com.graso.anitrack.anime.domain.model.Anime;
 import com.graso.anitrack.anime.domain.model.AnimeName;
+import com.graso.anitrack.anime.domain.model.AnimeReleasing;
 import com.graso.anitrack.anime.domain.model.AnimeTopSeason;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,7 @@ import java.util.Map;
 
 @Service
 @AllArgsConstructor
-public class AnimeService implements GetAnimeByIdUseCase, GetHomepageBannerAnimeUseCase, GetTopSeasonAnimeUseCase, GetAnimeByNameUseCase, GetAllEpisodesAnimeUseCase {
+public class AnimeService implements GetAnimeByIdUseCase, GetHomepageBannerAnimeUseCase, GetTopSeasonAnimeUseCase, GetAnimeByNameUseCase, GetAllEpisodesAnimeUseCase, GetReleasingAnimesUseCase {
     AnimeQueryPort animeQueryPort;
     EpisodeQueryPort episodeQueryPort;
 
@@ -46,5 +47,10 @@ public class AnimeService implements GetAnimeByIdUseCase, GetHomepageBannerAnime
     @Override
     public EpisodePage getAllEpisodesOfAnime(int animeId) {
         return episodeQueryPort.findAllEpisodesOfAnime(animeId);
+    }
+
+    @Override
+    public List<AnimeReleasing> getReleasingAnimes() {
+        return animeQueryPort.findAnimesReleasing();
     }
 }

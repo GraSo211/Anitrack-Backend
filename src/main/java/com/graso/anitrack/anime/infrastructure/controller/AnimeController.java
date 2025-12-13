@@ -4,6 +4,7 @@ import com.graso.anitrack.anime.application.dto.EpisodePage;
 import com.graso.anitrack.anime.application.port.in.*;
 import com.graso.anitrack.anime.domain.model.Anime;
 import com.graso.anitrack.anime.domain.model.AnimeName;
+import com.graso.anitrack.anime.domain.model.AnimeReleasing;
 import com.graso.anitrack.anime.domain.model.AnimeTopSeason;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,7 @@ public class AnimeController {
     private final GetTopSeasonAnimeUseCase getTopSeasonAnimeUseCase;
     private final GetAnimeByNameUseCase getAnimeByNameUseCase;
     private final GetAllEpisodesAnimeUseCase getAllEpisodesAnimeUseCase;
+    private final GetReleasingAnimesUseCase getReleasingAnimesUseCase;
 
     @GetMapping("/{id}")
     public ResponseEntity<Anime> getAnimeById(@PathVariable Long id) {
@@ -53,5 +55,12 @@ public class AnimeController {
         EpisodePage episodes = getAllEpisodesAnimeUseCase.getAllEpisodesOfAnime(animeId);
         return new ResponseEntity<>(episodes, HttpStatus.OK);
     }
+
+    @GetMapping("/releasingAnimes")
+    public ResponseEntity<List<AnimeReleasing>> getReleasingAnimes() {
+        List<AnimeReleasing> animesReleasing = getReleasingAnimesUseCase.getReleasingAnimes();
+        return new ResponseEntity<>(animesReleasing, HttpStatus.OK);
+    }
+
 
 }
