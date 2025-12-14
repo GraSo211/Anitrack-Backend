@@ -4,10 +4,7 @@ import com.graso.anitrack.anime.application.dto.EpisodePage;
 import com.graso.anitrack.anime.application.port.in.*;
 import com.graso.anitrack.anime.application.port.out.AnimeQueryPort;
 import com.graso.anitrack.anime.application.port.out.EpisodeQueryPort;
-import com.graso.anitrack.anime.domain.model.Anime;
-import com.graso.anitrack.anime.domain.model.AnimeName;
-import com.graso.anitrack.anime.domain.model.AnimeReleasing;
-import com.graso.anitrack.anime.domain.model.AnimeTopSeason;
+import com.graso.anitrack.anime.domain.model.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +13,7 @@ import java.util.Map;
 
 @Service
 @AllArgsConstructor
-public class AnimeService implements GetAnimeByIdUseCase, GetHomepageBannerAnimeUseCase, GetTopSeasonAnimeUseCase, GetAnimeByNameUseCase, GetAllEpisodesAnimeUseCase, GetReleasingAnimesUseCase {
+public class AnimeService implements GetAnimeByIdUseCase, GetHomepageBannerAnimeUseCase, GetTopSeasonAnimeUseCase, GetAnimeByNameUseCase, GetAllEpisodesAnimeUseCase, GetReleasingAnimesUseCase, GetUpcomingAnimeReleasesUseCase {
     AnimeQueryPort animeQueryPort;
     EpisodeQueryPort episodeQueryPort;
 
@@ -52,5 +49,11 @@ public class AnimeService implements GetAnimeByIdUseCase, GetHomepageBannerAnime
     @Override
     public List<AnimeReleasing> getReleasingAnimes() {
         return animeQueryPort.findAnimesReleasing();
+    }
+
+
+    @Override
+    public List<AnimeCard> getUpcomingAnimeReleases() {
+        return animeQueryPort.findUpcomingAnimeReleases();
     }
 }

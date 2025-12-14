@@ -338,5 +338,48 @@ public class AniListApiClient {
         return releasingAnimes;
     }
 
+
+    public List<AnimeCard> fetchUpcomingAnimeReleases() {
+        final String query = """
+                        query {
+                          Page(perPage: 5) {
+                            media(type: ANIME, status: NOT_YET_RELEASED, sort: [POPULARITY_DESC,TRENDING_DESC]) {
+                              id
+                              idMal
+                              title {
+                                romaji
+                                english
+                              }
+                              coverImage {
+                                extraLarge
+                                large
+                                medium
+                                color
+                              }
+                            }
+                          }
+                        }
+                
+                """;
+        PostQueryDto postQueryDto = new PostQueryDto(query, null);
+        Mono<ResponseUpcomingAnimeReleasesAniListDto> responseDtoMono = webClientBuilder.build()
+                .post()
+                .uri("https://graphql.anilist.co")
+                .bodyValue(postQueryDto)
+                .retrieve()
+                .bodyToMono(ResponseUpcomingAnimeReleasesAniListDto.class);
+        ResponseUpcomingAnimeReleasesAniListDto responseAniListDto = responseDtoMono.block();
+        if (responseAniListDto == null || responseAniListDto.data() == null) {
+            return Collections.emptyList();
+        }
+        List<AnimeCard> trendingAnimes = responseAniListDto.data()
+                .page()
+                .media()
+                .stream()
+                .map(anime -> aniListAnimeMapper.toAnimeCard(anime))
+                .toList();
+        return trendingAnimes;
+    }
+
 }
 

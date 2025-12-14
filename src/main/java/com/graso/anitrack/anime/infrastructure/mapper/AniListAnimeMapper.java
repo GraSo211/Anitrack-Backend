@@ -1,10 +1,7 @@
 package com.graso.anitrack.anime.infrastructure.mapper;
 
 import com.graso.anitrack.anime.domain.model.*;
-import com.graso.anitrack.anime.infrastructure.anilist.dto.ResponseFetchByIdAniListDto;
-import com.graso.anitrack.anime.infrastructure.anilist.dto.ResponseFetchByNameAniListDto;
-import com.graso.anitrack.anime.infrastructure.anilist.dto.ResponseReleasingAnimesAniListDto;
-import com.graso.anitrack.anime.infrastructure.anilist.dto.ResponseTopSeasonAnimeDto;
+import com.graso.anitrack.anime.infrastructure.anilist.dto.*;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -85,6 +82,16 @@ public class AniListAnimeMapper {
                 response.title(),
                 response.coverImage(),
                 response.nextAiringEpisode()
+        );
+    }
+
+
+    public AnimeCard toAnimeCard(ResponseUpcomingAnimeReleasesAniListDto.Data.Page.Media response) {
+        return new AnimeCard(
+                response.id(),
+                response.idMal(),
+                response.title(),
+                response.coverImage()
         );
     }
 

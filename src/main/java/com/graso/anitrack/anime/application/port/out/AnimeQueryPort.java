@@ -1,9 +1,6 @@
 package com.graso.anitrack.anime.application.port.out;
 
-import com.graso.anitrack.anime.domain.model.Anime;
-import com.graso.anitrack.anime.domain.model.AnimeName;
-import com.graso.anitrack.anime.domain.model.AnimeReleasing;
-import com.graso.anitrack.anime.domain.model.AnimeTopSeason;
+import com.graso.anitrack.anime.domain.model.*;
 
 import java.util.List;
 import java.util.Map;
@@ -18,4 +15,6 @@ public interface AnimeQueryPort {
     List<AnimeName> findByName(String name);
 
     List<AnimeReleasing> findAnimesReleasing();
+
+    List<AnimeCard> findUpcomingAnimeReleases();
 }

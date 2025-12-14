@@ -1,10 +1,7 @@
 package com.graso.anitrack.anime.infrastructure.anilist.adapter;
 
 import com.graso.anitrack.anime.application.port.out.AnimeQueryPort;
-import com.graso.anitrack.anime.domain.model.Anime;
-import com.graso.anitrack.anime.domain.model.AnimeName;
-import com.graso.anitrack.anime.domain.model.AnimeReleasing;
-import com.graso.anitrack.anime.domain.model.AnimeTopSeason;
+import com.graso.anitrack.anime.domain.model.*;
 import com.graso.anitrack.anime.infrastructure.anilist.client.AniListApiClient;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Primary;
@@ -42,6 +39,11 @@ public class AniListAnimeQueryAdapter implements AnimeQueryPort {
     @Override
     public List<AnimeReleasing> findAnimesReleasing() {
         return aniListApiClient.fetchReleasingAnimes();
+    }
+
+    @Override
+    public List<AnimeCard> findUpcomingAnimeReleases() {
+        return aniListApiClient.fetchUpcomingAnimeReleases();
     }
 
 
