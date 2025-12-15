@@ -51,5 +51,10 @@ public class AniListAnimeQueryAdapter implements AnimeQueryPort {
         return aniListApiClient.fetchSeasonTrendAnimes();
     }
 
+    @Override
+    public List<AnimeCard> findMostValoratedAnimes() {
+        return aniListApiClient.fetchMostValoratedAnimes();
+    }
+
 
 }

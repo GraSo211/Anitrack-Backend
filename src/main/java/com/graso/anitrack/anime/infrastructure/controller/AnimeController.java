@@ -24,6 +24,7 @@ public class AnimeController {
     private final GetReleasingAnimesUseCase getReleasingAnimesUseCase;
     private final GetUpcomingAnimeReleasesUseCase getUpcomingAnimeReleasesUseCase;
     private final GetSeasonTrendAnimesUseCase getSeasonTrendAnimesUseCase;
+    private final GetMostValoratedAnimesUseCase getMostValoratedAnimesUseCase;
 
     @GetMapping("/{id}")
     public ResponseEntity<Anime> getAnimeById(@PathVariable Long id) {
@@ -73,4 +74,9 @@ public class AnimeController {
         return new ResponseEntity<>(animeCards, HttpStatus.OK);
     }
 
+    @GetMapping("/mostValoratedAnimes")
+    public ResponseEntity<List<AnimeCard>> getMostValoratedAnimes() {
+        List<AnimeCard> animeCards = getMostValoratedAnimesUseCase.getMostValoratedAnimes();
+        return new ResponseEntity<>(animeCards, HttpStatus.OK);
+    }
 }

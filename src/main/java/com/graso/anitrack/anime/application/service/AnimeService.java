@@ -13,7 +13,7 @@ import java.util.Map;
 
 @Service
 @AllArgsConstructor
-public class AnimeService implements GetAnimeByIdUseCase, GetHomepageBannerAnimeUseCase, GetTopSeasonAnimeUseCase, GetAnimeByNameUseCase, GetAllEpisodesAnimeUseCase, GetReleasingAnimesUseCase, GetUpcomingAnimeReleasesUseCase, GetSeasonTrendAnimesUseCase {
+public class AnimeService implements GetAnimeByIdUseCase, GetHomepageBannerAnimeUseCase, GetTopSeasonAnimeUseCase, GetAnimeByNameUseCase, GetAllEpisodesAnimeUseCase, GetReleasingAnimesUseCase, GetUpcomingAnimeReleasesUseCase, GetSeasonTrendAnimesUseCase, GetMostValoratedAnimesUseCase {
     AnimeQueryPort animeQueryPort;
     EpisodeQueryPort episodeQueryPort;
 
@@ -60,5 +60,10 @@ public class AnimeService implements GetAnimeByIdUseCase, GetHomepageBannerAnime
     @Override
     public List<AnimeCard> getSeasonTrendAnimes() {
         return animeQueryPort.findSeasonTrendAnimes();
+    }
+
+    @Override
+    public List<AnimeCard> getMostValoratedAnimes() {
+        return animeQueryPort.findMostValoratedAnimes();
     }
 }

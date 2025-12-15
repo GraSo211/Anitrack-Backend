@@ -19,4 +19,6 @@ public interface AnimeQueryPort {
     List<AnimeCard> findUpcomingAnimeReleases();
 
     List<AnimeCard> findSeasonTrendAnimes();
+
+    List<AnimeCard> findMostValoratedAnimes();
 }

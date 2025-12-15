@@ -425,5 +425,47 @@ public class AniListApiClient {
         return trendingAnimes;
     }
 
+    public List<AnimeCard> fetchMostValoratedAnimes() {
+        final String query = """
+                        query {
+                          Page(perPage: 5) {
+                            media(type: ANIME, sort: SCORE_DESC) {
+                              id
+                              idMal
+                              title {
+                                romaji
+                                english
+                              }
+                              coverImage {
+                                extraLarge
+                                large
+                                medium
+                                color
+                              }
+                            }
+                          }
+                        }
+                
+                """;
+        PostQueryDto postQueryDto = new PostQueryDto(query, null);
+        Mono<ResponseAnimeCardAniListDto> responseDtoMono = webClientBuilder.build()
+                .post()
+                .uri("https://graphql.anilist.co")
+                .bodyValue(postQueryDto)
+                .retrieve()
+                .bodyToMono(ResponseAnimeCardAniListDto.class);
+        ResponseAnimeCardAniListDto responseAniListDto = responseDtoMono.block();
+        if (responseAniListDto == null || responseAniListDto.data() == null) {
+            return Collections.emptyList();
+        }
+        List<AnimeCard> trendingAnimes = responseAniListDto.data()
+                .page()
+                .media()
+                .stream()
+                .map(anime -> aniListAnimeMapper.toAnimeCard(anime))
+                .toList();
+        return trendingAnimes;
+    }
+
 }
 
