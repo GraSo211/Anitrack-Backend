@@ -8,7 +8,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/anitrack
     username: postgres
-    password: GramaSola211
+    password: root
 
   security:
     oauth2:
