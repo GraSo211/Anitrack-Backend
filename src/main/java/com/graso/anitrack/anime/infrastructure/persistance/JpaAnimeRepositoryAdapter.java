@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.graso.anitrack.anime.infrastructure.persistance.entity.AnimeEntity;
-import com.graso.anitrack.anime.infrastructure.persistance.mapper.AnimeEntityMapper;
+import com.graso.anitrack.anime.infrastructure.mapper.AnimeEntityMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 
