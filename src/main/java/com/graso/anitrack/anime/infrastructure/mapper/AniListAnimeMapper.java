@@ -86,7 +86,7 @@ public class AniListAnimeMapper {
     }
 
 
-    public AnimeCard toAnimeCard(ResponseUpcomingAnimeReleasesAniListDto.Data.Page.Media response) {
+    public AnimeCard toAnimeCard(ResponseAnimeCardAniListDto.Data.Page.Media response) {
         return new AnimeCard(
                 response.id(),
                 response.idMal(),

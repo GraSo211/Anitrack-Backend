@@ -362,13 +362,57 @@ public class AniListApiClient {
                 
                 """;
         PostQueryDto postQueryDto = new PostQueryDto(query, null);
-        Mono<ResponseUpcomingAnimeReleasesAniListDto> responseDtoMono = webClientBuilder.build()
+        Mono<ResponseAnimeCardAniListDto> responseDtoMono = webClientBuilder.build()
                 .post()
                 .uri("https://graphql.anilist.co")
                 .bodyValue(postQueryDto)
                 .retrieve()
-                .bodyToMono(ResponseUpcomingAnimeReleasesAniListDto.class);
-        ResponseUpcomingAnimeReleasesAniListDto responseAniListDto = responseDtoMono.block();
+                .bodyToMono(ResponseAnimeCardAniListDto.class);
+        ResponseAnimeCardAniListDto responseAniListDto = responseDtoMono.block();
+        if (responseAniListDto == null || responseAniListDto.data() == null) {
+            return Collections.emptyList();
+        }
+        List<AnimeCard> trendingAnimes = responseAniListDto.data()
+                .page()
+                .media()
+                .stream()
+                .map(anime -> aniListAnimeMapper.toAnimeCard(anime))
+                .toList();
+        return trendingAnimes;
+    }
+
+    public List<AnimeCard> fetchSeasonTrendAnimes() {
+        MediaSeason actualSeason = MediaSeason.current();
+        int actualYear = LocalDate.now().getYear();
+        final String query = String.format("""
+                        query {
+                          Page(perPage: 5) {
+                            media(type: ANIME, sort: POPULARITY_DESC, season: %s, seasonYear: %d) {
+                              id
+                              idMal
+                              title {
+                                romaji
+                                english
+                              }
+                              coverImage {
+                                extraLarge
+                                large
+                                medium
+                                color
+                              }
+                            }
+                          }
+                        }
+                
+                """, actualSeason.toString(), actualYear);
+        PostQueryDto postQueryDto = new PostQueryDto(query, null);
+        Mono<ResponseAnimeCardAniListDto> responseDtoMono = webClientBuilder.build()
+                .post()
+                .uri("https://graphql.anilist.co")
+                .bodyValue(postQueryDto)
+                .retrieve()
+                .bodyToMono(ResponseAnimeCardAniListDto.class);
+        ResponseAnimeCardAniListDto responseAniListDto = responseDtoMono.block();
         if (responseAniListDto == null || responseAniListDto.data() == null) {
             return Collections.emptyList();
         }

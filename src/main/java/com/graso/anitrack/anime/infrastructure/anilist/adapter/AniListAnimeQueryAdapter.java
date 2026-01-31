@@ -46,5 +46,10 @@ public class AniListAnimeQueryAdapter implements AnimeQueryPort {
         return aniListApiClient.fetchUpcomingAnimeReleases();
     }
 
+    @Override
+    public List<AnimeCard> findSeasonTrendAnimes() {
+        return aniListApiClient.fetchSeasonTrendAnimes();
+    }
+
 
 }

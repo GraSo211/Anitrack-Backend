@@ -6,7 +6,7 @@ import com.graso.anitrack.anime.domain.model.MediaTitle;
 
 import java.util.List;
 
-public record ResponseUpcomingAnimeReleasesAniListDto(Data data) {
+public record ResponseAnimeCardAniListDto(Data data) {
     public record Data(
             @JsonProperty("Page") Page page
     ) {

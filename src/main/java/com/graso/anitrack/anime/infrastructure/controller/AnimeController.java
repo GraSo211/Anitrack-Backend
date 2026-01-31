@@ -23,6 +23,7 @@ public class AnimeController {
     private final GetAllEpisodesAnimeUseCase getAllEpisodesAnimeUseCase;
     private final GetReleasingAnimesUseCase getReleasingAnimesUseCase;
     private final GetUpcomingAnimeReleasesUseCase getUpcomingAnimeReleasesUseCase;
+    private final GetSeasonTrendAnimesUseCase getSeasonTrendAnimesUseCase;
 
     @GetMapping("/{id}")
     public ResponseEntity<Anime> getAnimeById(@PathVariable Long id) {
@@ -63,6 +64,12 @@ public class AnimeController {
     @GetMapping("/upcomingAnimeReleases")
     public ResponseEntity<List<AnimeCard>> getUpcomingAnimeReleases() {
         List<AnimeCard> animeCards = getUpcomingAnimeReleasesUseCase.getUpcomingAnimeReleases();
+        return new ResponseEntity<>(animeCards, HttpStatus.OK);
+    }
+
+    @GetMapping("/seasonTrendAnimes")
+    public ResponseEntity<List<AnimeCard>> getSeasonTrendAnimes() {
+        List<AnimeCard> animeCards = getSeasonTrendAnimesUseCase.getSeasonTrendAnimes();
         return new ResponseEntity<>(animeCards, HttpStatus.OK);
     }
 
