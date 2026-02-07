@@ -5,11 +5,8 @@ spring:
     compose:
       enabled: false
   datasource:
-    url: jdbc:postgresql://localhost:5432/anitrack
-    username: postgres
-    password: root
-    port: 5431
-
+    url: jdbc:${DATABASE_URL}
+    driver-class-name: org.postgresql.Driver
   security:
     oauth2:
       resourceserver:
