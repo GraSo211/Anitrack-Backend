@@ -5,8 +5,15 @@ spring:
     compose:
       enabled: false
   datasource:
-    url: jdbc:${DATABASE_URL}
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USER}
+    password: ${DATABASE_PASSWORD}
     driver-class-name: org.postgresql.Driver
+    hikari:
+      data-source-properties:
+        ssl: true
+        sslmode: require
+        sslfactory: org.postgresql.ssl.NonValidatingFactory
   security:
     oauth2:
       resourceserver:
