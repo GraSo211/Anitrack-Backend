@@ -2,6 +2,8 @@ package com.graso.anitrack.anime.infrastructure.mapper;
 
 import com.graso.anitrack.anime.domain.model.*;
 import com.graso.anitrack.anime.infrastructure.anilist.dto.*;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Safelist;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -12,15 +14,17 @@ public class AniListAnimeMapper {
     public Anime toDomain(ResponseFetchByIdAniListDto response) {
 
         ResponseFetchByIdAniListDto.Data.Media dto = response.data().media();
-
+        String cleanDescription = Jsoup.clean(
+                dto.description(),
+                Safelist.basic()
+        );
         return new Anime(
                 dto.id().intValue(),
                 dto.idMal() != null ? dto.idMal().intValue() : null,
 
                 mapTitle(dto.title()),
                 mapStatus(dto.status()),
-                dto.description(),
-
+                cleanDescription,
                 mapFuzzyDate(dto.startDate()),
                 mapFuzzyDate(dto.endDate()),
 

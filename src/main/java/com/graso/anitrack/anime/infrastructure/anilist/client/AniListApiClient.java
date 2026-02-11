@@ -31,7 +31,7 @@ public class AniListApiClient {
                                english
                              }
                              status
-                             description
+                             description(asHtml: true)
                              startDate{
                                 year
                                 month
