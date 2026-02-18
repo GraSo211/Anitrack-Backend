@@ -5,6 +5,7 @@ import com.graso.anitrack.anime.domain.model.*;
 import com.graso.anitrack.anime.infrastructure.anilist.dto.*;
 import com.graso.anitrack.anime.infrastructure.mapper.AniListAnimeMapper;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -18,7 +19,7 @@ public class AniListApiClient {
     private WebClient.Builder webClientBuilder;
     private AniListAnimeMapper aniListAnimeMapper;
 
-
+    @Cacheable(value = "animeDay", unless = "#result == null")
     public Anime fetchAnimeById(Long id) {
         final String query =
                 """
@@ -113,6 +114,7 @@ public class AniListApiClient {
         return aniListAnimeMapper.toDomain(responseAniListDto);
     }
 
+    @Cacheable(value = "animeWeek", unless = "#result == null")
     public Map<String, String> fetchBannerImage() {
         final String currentSeason = MediaSeason.current().toString();
         final int currentYear = LocalDate.now().getYear();
@@ -156,6 +158,7 @@ public class AniListApiClient {
         return Map.of("link", imageLink);
     }
 
+    @Cacheable(value = "animeWeek", unless = "#result == null")
     public AnimeTopSeason findTopAnimeSeason() {
         String actualSeason = MediaSeason.current().toString();
         int actualYear = LocalDate.now().getYear();
@@ -233,7 +236,6 @@ public class AniListApiClient {
         return aniListAnimeMapper.toAnimeTopSeason(topSeasonAnime);
     }
 
-
     public List<AnimeName> fetchAnimeByName(String name) {
         final String query = String.format("""
                       query($search: String){
@@ -276,7 +278,7 @@ public class AniListApiClient {
         return animesByName;
     }
 
-
+    @Cacheable(value = "animeHour", unless = "#result == null")
     public List<AnimeReleasing> fetchReleasingAnimes() {
         final String query = """
                         query ($page: Int, $perPage: Int) {
@@ -338,7 +340,7 @@ public class AniListApiClient {
         return releasingAnimes;
     }
 
-
+    @Cacheable(value = "animeWeek", unless = "#result == null")
     public List<AnimeCard> fetchUpcomingAnimeReleases() {
         final String query = """
                         query {
@@ -381,6 +383,7 @@ public class AniListApiClient {
         return trendingAnimes;
     }
 
+    @Cacheable(value = "animeDay", unless = "#result == null")
     public List<AnimeCard> fetchSeasonTrendAnimes() {
         MediaSeason actualSeason = MediaSeason.current();
         int actualYear = LocalDate.now().getYear();
@@ -425,6 +428,7 @@ public class AniListApiClient {
         return trendingAnimes;
     }
 
+    @Cacheable(value = "animeWeek", unless = "#result == null")
     public List<AnimeCard> fetchMostValoratedAnimes() {
         final String query = """
                         query {
@@ -467,7 +471,7 @@ public class AniListApiClient {
         return trendingAnimes;
     }
 
-
+    @Cacheable(value = "animeWeek", unless = "#result == null")
     public List<AnimeCard> fetchAnimesByGenre(String genre) {
         final String query = """
                         query ($genre: String) {
