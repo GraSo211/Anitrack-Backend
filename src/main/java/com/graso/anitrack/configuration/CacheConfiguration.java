@@ -22,11 +22,23 @@ public class CacheConfiguration {
 
         SimpleCacheManager manager = new SimpleCacheManager();
         List<CaffeineCache> caches = List.of(
-                buildCache("animeHour", 1, TimeUnit.HOURS, 1000),
-                buildCache("animeDay", 1, TimeUnit.DAYS, 1000),
-                buildCache("animeWeek", 7, TimeUnit.DAYS, 1000)
+
+                // 1 hora
+                buildCache("releasingAnimesCache", 1, TimeUnit.HOURS, 1000),
+
+                // 1 día
+                buildCache("animeByIdCache", 1, TimeUnit.DAYS, 2000),
+                buildCache("seasonTrendCache", 1, TimeUnit.DAYS, 1000),
+
+                // 7 días
+                buildCache("topSeasonCache", 7, TimeUnit.DAYS, 100),
+                buildCache("bannerImageCache", 7, TimeUnit.DAYS, 50),
+                buildCache("mostValoratedCache", 7, TimeUnit.DAYS, 500),
+                buildCache("upcomingReleasesCache", 7, TimeUnit.DAYS, 500),
+                buildCache("genreAnimeCache", 7, TimeUnit.DAYS, 1000)
 
         );
+
         manager.setCaches(caches);
         return manager;
     }
