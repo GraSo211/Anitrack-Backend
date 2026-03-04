@@ -14,7 +14,7 @@ public class JikanApiClient {
     private JikanAnimeMapper jikanAnimeMapper;
 
     public EpisodePage fetchAllEpisodesOfAnime(int animeId) {
-        String url = "https://api.jikan.moe/v4/anime/" + animeId + "/episodes";
+        String url = STR."https://api.jikan.moe/v4/anime/\{animeId}/episodes";
         ResponseEpisodesJikanDto responseEpisodesJikanDtoMono = webClientBuilder.build()
                 .get()
                 .uri(url)
@@ -24,4 +24,6 @@ public class JikanApiClient {
 
         return jikanAnimeMapper.toEpisodePage(responseEpisodesJikanDtoMono);
     }
+
+
 }
