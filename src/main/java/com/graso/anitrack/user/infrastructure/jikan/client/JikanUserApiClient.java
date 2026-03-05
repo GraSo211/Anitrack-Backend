@@ -21,7 +21,7 @@ public class JikanUserApiClient {
 
 
     public List<RandomUserJikan> fetchRandomUsers(int count) {
-        String url = STR."https://api.jikan.moe/v4/users?limit=\{count}";
+        String url = "https://api.jikan.moe/v4/users?limit=" + count;
         ResponseUsersJikanDto responseUsersJikanDto = webClientBuilder.build()
                 .get()
                 .uri(url)
@@ -35,7 +35,7 @@ public class JikanUserApiClient {
     }
 
     public UserJikan fetchUserByUsername(String username) {
-        String url = STR."https://api.jikan.moe/v4/users/\{username}/full";
+        String url = "https://api.jikan.moe/v4/users/" + username + "/full";
         ResponseUserByIdJikanDto user = webClientBuilder.build()
                 .get()
                 .uri(url)
