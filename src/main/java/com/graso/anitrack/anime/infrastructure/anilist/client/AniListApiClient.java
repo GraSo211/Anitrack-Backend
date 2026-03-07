@@ -574,7 +574,7 @@ public class AniListApiClient {
     public List<AnimeCard> fetchAnimesByFilters(List<String> tags, List<String> genres, int year, String season, String status) {
         String query = """
                         query ($genre_in: [String], $tag_in: [String], $season: MediaSeason, $seasonYear: Int, $status: MediaStatus) {
-                          Page(perPage: 10) {
+                          Page(perPage: 25) {
                             media(type: ANIME, genre_in: $genre_in, tag_in: $tag_in, season: $season, seasonYear: $seasonYear, status: $status, sort: POPULARITY_DESC) {
                               id
                               idMal
@@ -592,7 +592,7 @@ public class AniListApiClient {
                           }
                         }
                 """;
-        
+
         Map<String, Object> variables = new HashMap<>();
 
         if (genres != null && !genres.isEmpty()) {
