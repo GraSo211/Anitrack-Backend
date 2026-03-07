@@ -1,6 +1,8 @@
 package com.graso.anitrack.anime.infrastructure.mapper;
 
 import com.graso.anitrack.anime.domain.model.*;
+import com.graso.anitrack.anime.domain.model.genres.Genre;
+import com.graso.anitrack.anime.domain.model.genres.Tag;
 import com.graso.anitrack.anime.infrastructure.anilist.dto.*;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Safelist;
@@ -96,6 +98,21 @@ public class AniListAnimeMapper {
                 response.idMal(),
                 response.title(),
                 response.coverImage()
+        );
+    }
+
+
+    public Tag toTag(ResponseTagsAniListDto.Data.MediaTagCollection response) {
+        return new Tag(
+                response.name(),
+                response.description(),
+                response.isAdult()
+        );
+    }
+
+    public Genre toGenre(String response) {
+        return new Genre(
+                response
         );
     }
 

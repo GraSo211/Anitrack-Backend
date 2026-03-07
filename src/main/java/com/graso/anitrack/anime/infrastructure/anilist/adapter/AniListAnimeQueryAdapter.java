@@ -2,6 +2,8 @@ package com.graso.anitrack.anime.infrastructure.anilist.adapter;
 
 import com.graso.anitrack.anime.application.port.out.AnimeQueryPort;
 import com.graso.anitrack.anime.domain.model.*;
+import com.graso.anitrack.anime.domain.model.genres.Genre;
+import com.graso.anitrack.anime.domain.model.genres.Tag;
 import com.graso.anitrack.anime.infrastructure.anilist.client.AniListApiClient;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Primary;
@@ -59,6 +61,21 @@ public class AniListAnimeQueryAdapter implements AnimeQueryPort {
     @Override
     public List<AnimeCard> findAnimesByGenre(String genre) {
         return aniListApiClient.fetchAnimesByGenre(genre);
+    }
+
+    @Override
+    public List<Genre> findAllGenres() {
+        return aniListApiClient.fetchAllGenres();
+    }
+
+    @Override
+    public List<Tag> findAllTags() {
+        return aniListApiClient.fetchAllTags();
+    }
+
+    @Override
+    public List<AnimeCard> findAnimesByFilters(List<String> tags, List<String> genres, int year, String season, String status) {
+        return aniListApiClient.fetchAnimesByFilters(tags, genres, year, season, status);
     }
 
 

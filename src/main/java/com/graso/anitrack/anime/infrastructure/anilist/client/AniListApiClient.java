@@ -2,6 +2,8 @@ package com.graso.anitrack.anime.infrastructure.anilist.client;
 
 
 import com.graso.anitrack.anime.domain.model.*;
+import com.graso.anitrack.anime.domain.model.genres.Genre;
+import com.graso.anitrack.anime.domain.model.genres.Tag;
 import com.graso.anitrack.anime.infrastructure.anilist.dto.*;
 import com.graso.anitrack.anime.infrastructure.mapper.AniListAnimeMapper;
 import lombok.AllArgsConstructor;
@@ -514,5 +516,125 @@ public class AniListApiClient {
                 .toList();
         return trendingAnimes;
     }
+
+    public List<Tag> fetchAllTags() {
+        final String query = """
+                        query {
+                          MediaTagCollection {
+                            name
+                            description
+                            isAdult
+                          }
+                        }
+                """;
+        PostQueryDto postQueryDto = new PostQueryDto(query, null);
+        Mono<ResponseTagsAniListDto> responseDtoMono = webClientBuilder.build()
+                .post()
+                .uri("https://graphql.anilist.co")
+                .bodyValue(postQueryDto)
+                .retrieve()
+                .bodyToMono(ResponseTagsAniListDto.class);
+        ResponseTagsAniListDto responseTagsAniListDto = responseDtoMono.block();
+        if (responseTagsAniListDto == null || responseTagsAniListDto.data() == null) {
+            return Collections.emptyList();
+        }
+        List<Tag> tags = responseTagsAniListDto.data()
+                .mediaTagCollection()
+                .stream()
+                .map(tag -> aniListAnimeMapper.toTag(tag))
+                .toList();
+        return tags;
+    }
+
+    public List<Genre> fetchAllGenres() {
+        final String query = """
+                        query {
+                          GenreCollection
+                        }
+                """;
+        PostQueryDto postQueryDto = new PostQueryDto(query, null);
+        Mono<ResponseGenresAniListDto> responseDtoMono = webClientBuilder.build()
+                .post()
+                .uri("https://graphql.anilist.co")
+                .bodyValue(postQueryDto)
+                .retrieve()
+                .bodyToMono(ResponseGenresAniListDto.class);
+        ResponseGenresAniListDto responseGenresAniListDto = responseDtoMono.block();
+        if (responseGenresAniListDto == null || responseGenresAniListDto.data() == null) {
+            return Collections.emptyList();
+        }
+        List<Genre> genres = responseGenresAniListDto.data()
+                .genreCollection()
+                .stream()
+                .map(genre -> aniListAnimeMapper.toGenre(genre))
+                .toList();
+        return genres;
+    }
+
+    public List<AnimeCard> fetchAnimesByFilters(List<String> tags, List<String> genres, int year, String season, String status) {
+        String query = """
+                        query ($genre_in: [String], $tag_in: [String], $season: MediaSeason, $seasonYear: Int, $status: MediaStatus) {
+                          Page(perPage: 10) {
+                            media(type: ANIME, genre_in: $genre_in, tag_in: $tag_in, season: $season, seasonYear: $seasonYear, status: $status, sort: POPULARITY_DESC) {
+                              id
+                              idMal
+                              title {
+                                romaji
+                                english
+                              }
+                              coverImage {
+                                extraLarge
+                                large
+                                medium
+                                color
+                              }
+                            }
+                          }
+                        }
+                """;
+        
+        Map<String, Object> variables = new HashMap<>();
+
+        if (genres != null && !genres.isEmpty()) {
+            variables.put("genre_in", genres);
+        }
+
+        if (tags != null && !tags.isEmpty()) {
+            variables.put("tag_in", tags);
+        }
+
+        if (season != null) {
+            variables.put("season", season);
+        }
+
+        if (year > 0) {
+            variables.put("seasonYear", year);
+        }
+
+        if (status != null) {
+            variables.put("status", status);
+        }
+
+        PostQueryDto postQueryDto = new PostQueryDto(query, variables);
+        Mono<ResponseAnimeCardAniListDto> responseDtoMono = webClientBuilder.build()
+                .post()
+                .uri("https://graphql.anilist.co")
+                .bodyValue(postQueryDto)
+                .retrieve()
+                .bodyToMono(ResponseAnimeCardAniListDto.class);
+        ResponseAnimeCardAniListDto responseAniListDto = responseDtoMono.block();
+        if (responseAniListDto == null || responseAniListDto.data() == null) {
+            return Collections.emptyList();
+        }
+        List<AnimeCard> filteredAnimes = responseAniListDto.data()
+                .page()
+                .media()
+                .stream()
+                .map(anime -> aniListAnimeMapper.toAnimeCard(anime))
+                .toList();
+        return filteredAnimes;
+    }
+
+
 }
 

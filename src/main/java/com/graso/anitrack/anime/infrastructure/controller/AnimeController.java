@@ -3,6 +3,8 @@ package com.graso.anitrack.anime.infrastructure.controller;
 import com.graso.anitrack.anime.application.dto.EpisodePage;
 import com.graso.anitrack.anime.application.port.in.*;
 import com.graso.anitrack.anime.domain.model.*;
+import com.graso.anitrack.anime.domain.model.genres.Genre;
+import com.graso.anitrack.anime.domain.model.genres.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +28,9 @@ public class AnimeController {
     private final GetSeasonTrendAnimesUseCase getSeasonTrendAnimesUseCase;
     private final GetMostValoratedAnimesUseCase getMostValoratedAnimesUseCase;
     private final GetAnimesByGenreUseCase getAnimesByGenreUseCase;
+    private final GetTagsUseCase getTagsUseCase;
+    private final GetGenresUseCase getGenresUseCase;
+    private final GetFilteredAnimesUseCase getFilteredAnimesUseCase;
 
 
     @GetMapping("/{id}")
@@ -87,4 +92,30 @@ public class AnimeController {
         List<AnimeCard> animeCards = getAnimesByGenreUseCase.getAnimesByGenre(genre);
         return new ResponseEntity<>(animeCards, HttpStatus.OK);
     }
+
+    @GetMapping("/allTags")
+    public ResponseEntity<List<Tag>> getAllTags() {
+        List<Tag> tags = getTagsUseCase.getTags();
+        return new ResponseEntity<>(tags, HttpStatus.OK);
+
+    }
+
+    @GetMapping("/allGenres")
+    public ResponseEntity<List<Genre>> getAllGenres() {
+        List<Genre> genres = getGenresUseCase.getGenres();
+        return new ResponseEntity<>(genres, HttpStatus.OK);
+
+    }
+
+    @GetMapping("/filtered")
+    public ResponseEntity<List<AnimeCard>> getFilteredAnimes(
+            @RequestParam(required = false) List<String> tag,
+            @RequestParam(required = false) List<String> genre,
+            @RequestParam(required = false, defaultValue = "0") int year,
+            @RequestParam(required = false) String season,
+            @RequestParam(required = false) String status) {
+        List<AnimeCard> animeCards = getFilteredAnimesUseCase.getFilteredAnimes(tag, genre, year, season, status);
+        return new ResponseEntity<>(animeCards, HttpStatus.OK);
+    }
+
 }
