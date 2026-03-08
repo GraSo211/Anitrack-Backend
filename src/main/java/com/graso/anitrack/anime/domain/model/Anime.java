@@ -1,5 +1,6 @@
 package com.graso.anitrack.anime.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -31,6 +32,7 @@ public class Anime {
     private final Integer popularity;
     private MediaRelations relations;
     private final String studio;
+    @JsonProperty("isAdult")
     private final boolean isAdult;
     private final AiringSchedule nextAiringEpisode;
 
