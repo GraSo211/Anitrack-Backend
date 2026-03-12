@@ -16,3 +16,10 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+
+mal:
+  client-id: ${MAL_CLIENT_ID}
+  client-secret: ${MAL_CLIENT_SECRET}
+
+application:
+  backend-url: ${BACKEND_URL}}

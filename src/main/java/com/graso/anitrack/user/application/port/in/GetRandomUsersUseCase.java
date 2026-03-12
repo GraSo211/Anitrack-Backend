@@ -1,6 +1,6 @@
 package com.graso.anitrack.user.application.port.in;
 
-import com.graso.anitrack.user.domain.RandomUserJikan;
+import com.graso.anitrack.user.domain.UserJikan.RandomUserJikan;
 
 import java.util.List;
 

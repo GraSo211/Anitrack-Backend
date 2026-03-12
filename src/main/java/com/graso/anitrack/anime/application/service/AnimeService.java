@@ -1,12 +1,15 @@
 package com.graso.anitrack.anime.application.service;
 
+import com.graso.anitrack.anime.application.dto.AnimeCard;
+import com.graso.anitrack.anime.application.dto.AnimeReleasing;
+import com.graso.anitrack.anime.application.dto.AnimeTopSeason;
 import com.graso.anitrack.anime.application.dto.EpisodePage;
 import com.graso.anitrack.anime.application.port.in.*;
 import com.graso.anitrack.anime.application.port.out.AnimeQueryPort;
 import com.graso.anitrack.anime.application.port.out.EpisodeQueryPort;
-import com.graso.anitrack.anime.domain.model.*;
-import com.graso.anitrack.anime.domain.model.genres.Genre;
-import com.graso.anitrack.anime.domain.model.genres.Tag;
+import com.graso.anitrack.anime.domain.anime.Anime;
+import com.graso.anitrack.anime.domain.genre.Genre;
+import com.graso.anitrack.anime.domain.genre.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +18,7 @@ import java.util.Map;
 
 @Service
 @AllArgsConstructor
-public class AnimeService implements GetAnimeByIdUseCase, GetHomepageBannerAnimeUseCase, GetTopSeasonAnimeUseCase, GetAnimeByNameUseCase, GetAllEpisodesAnimeUseCase, GetReleasingAnimesUseCase, GetUpcomingAnimeReleasesUseCase, GetSeasonTrendAnimesUseCase, GetMostValoratedAnimesUseCase, GetAnimesByGenreUseCase, GetGenresUseCase, GetTagsUseCase, GetFilteredAnimesUseCase {
+public class AnimeService implements GetAnimeByIdUseCase, GetHomepageBannerAnimeUseCase, GetTopSeasonAnimeUseCase, GetAllEpisodesAnimeUseCase, GetReleasingAnimesUseCase, GetUpcomingAnimeReleasesUseCase, GetSeasonTrendAnimesUseCase, GetMostValoratedAnimesUseCase, GetGenresUseCase, GetTagsUseCase, GetFilteredAnimesUseCase {
     AnimeQueryPort animeQueryPort;
     EpisodeQueryPort episodeQueryPort;
 
@@ -36,11 +39,6 @@ public class AnimeService implements GetAnimeByIdUseCase, GetHomepageBannerAnime
     @Override
     public AnimeTopSeason getTopSeasonAnime() {
         return animeQueryPort.findTopSeasonAnime();
-    }
-
-    @Override
-    public List<AnimeName> getByName(String name) {
-        return animeQueryPort.findByName(name);
     }
 
     @Override
@@ -69,10 +67,6 @@ public class AnimeService implements GetAnimeByIdUseCase, GetHomepageBannerAnime
         return animeQueryPort.findMostValoratedAnimes();
     }
 
-    @Override
-    public List<AnimeCard> getAnimesByGenre(String genre) {
-        return animeQueryPort.findAnimesByGenre(genre);
-    }
 
     @Override
     public List<Tag> getTags() {
@@ -86,7 +80,7 @@ public class AnimeService implements GetAnimeByIdUseCase, GetHomepageBannerAnime
 
 
     @Override
-    public List<AnimeCard> getFilteredAnimes(List<String> tags, List<String> genres, int year, String season, String status) {
-        return animeQueryPort.findAnimesByFilters(tags, genres, year, season, status);
+    public List<AnimeCard> getFilteredAnimes(int cant, String name, List<String> tags, List<String> genres, int year, String season, String status) {
+        return animeQueryPort.findAnimesByFilters(cant, name, tags, genres, year, season, status);
     }
 }

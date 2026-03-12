@@ -2,9 +2,10 @@ package com.graso.anitrack.user.application.service;
 
 import com.graso.anitrack.user.application.port.in.GetRandomUsersUseCase;
 import com.graso.anitrack.user.application.port.in.GetUserByUsernameUseCase;
+import com.graso.anitrack.user.application.port.out.AuthPort;
 import com.graso.anitrack.user.application.port.out.UserQueryPort;
-import com.graso.anitrack.user.domain.RandomUserJikan;
-import com.graso.anitrack.user.domain.UserJikan;
+import com.graso.anitrack.user.domain.UserJikan.RandomUserJikan;
+import com.graso.anitrack.user.domain.UserJikan.UserJikan;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 public class UserService implements GetRandomUsersUseCase, GetUserByUsernameUseCase {
     UserQueryPort userQueryPort;
+    AuthPort authPort;
 
 
     @Override
@@ -25,4 +27,6 @@ public class UserService implements GetRandomUsersUseCase, GetUserByUsernameUseC
     public UserJikan getUserByUsername(String username) {
         return userQueryPort.findUserByUsername(username);
     }
+
+
 }

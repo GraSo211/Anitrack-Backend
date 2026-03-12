@@ -1,6 +1,6 @@
 package com.graso.anitrack.anime.application.port.in;
 
-import com.graso.anitrack.anime.domain.model.AnimeTopSeason;
+import com.graso.anitrack.anime.application.dto.AnimeTopSeason;
 
 public interface GetTopSeasonAnimeUseCase {
     AnimeTopSeason getTopSeasonAnime();
