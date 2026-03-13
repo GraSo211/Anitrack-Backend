@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.CookieValue;
 
 import java.security.SecureRandom;
 import java.time.Duration;
@@ -77,8 +76,8 @@ public class AuthService implements LoginWithMyAnimeListUseCase {
     public ResponseTokenRequest loginWithMyAnimeList(
             String code,
             String state,
-            @CookieValue("mal_oauth_state") String savedState,
-            @CookieValue("mal_code_verifier") String codeVerifier
+            String savedState,
+            String codeVerifier
     ) {
 
         System.out.println("el state que tengo es: " + savedState);
