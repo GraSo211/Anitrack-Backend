@@ -1,9 +1,10 @@
 package com.graso.anitrack.user.application.port.in;
 
-import com.graso.anitrack.user.domain.User;
+import com.graso.anitrack.external.myanimelist.dto.ResponseTokenRequest;
+import jakarta.servlet.http.HttpSession;
 
 public interface LoginWithMyAnimeListUseCase {
-    String generateAuthorizationUrl();
+    String generateAuthorizationUrl(HttpSession session);
 
-    User loginWithMyAnimeList();
+    ResponseTokenRequest loginWithMyAnimeList(String code, String state, HttpSession session);
 }

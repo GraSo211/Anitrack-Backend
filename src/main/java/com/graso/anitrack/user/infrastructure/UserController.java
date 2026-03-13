@@ -1,8 +1,10 @@
 package com.graso.anitrack.user.infrastructure;
 
 
+import com.graso.anitrack.user.application.port.in.GetMyUserUseCase;
 import com.graso.anitrack.user.application.port.in.GetRandomUsersUseCase;
 import com.graso.anitrack.user.application.port.in.GetUserByUsernameUseCase;
+import com.graso.anitrack.user.domain.User;
 import com.graso.anitrack.user.domain.UserJikan.RandomUserJikan;
 import com.graso.anitrack.user.domain.UserJikan.UserJikan;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,6 +25,7 @@ public class UserController {
 
     private final GetRandomUsersUseCase getRandomUsersUseCase;
     private final GetUserByUsernameUseCase getUserByUsername;
+    private final GetMyUserUseCase getMyUserUseCase;
 
 
     @GetMapping("/random")
@@ -34,6 +37,12 @@ public class UserController {
     @GetMapping("/{username}")
     public ResponseEntity<UserJikan> getUserByUsername(@PathVariable String username) {
         UserJikan user = getUserByUsername.getUserByUsername(username);
+        return ResponseEntity.ok(user);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<User> getMyUser(@CookieValue("access_token") String token) {
+        User user = getMyUserUseCase.getMyUser(token);
         return ResponseEntity.ok(user);
     }
 

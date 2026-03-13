@@ -24,5 +24,19 @@ public class WebClientConfiguration {
                 .build();
     }
 
+    @Bean
+    public WebClient myAnimeListWebClientFirstVersion() {
+        return WebClient.builder()
+                .baseUrl("https://myanimelist.net/")
+                .build();
+    }
+
+    @Bean
+    public WebClient myAnimeListWebClientSecondVersion() {
+        return WebClient.builder()
+                .baseUrl("https://api.myanimelist.net/")
+                .build();
+    }
+
 
 }

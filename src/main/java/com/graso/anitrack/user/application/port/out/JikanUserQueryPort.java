@@ -5,10 +5,10 @@ import com.graso.anitrack.user.domain.UserJikan.UserJikan;
 
 import java.util.List;
 
-public interface UserQueryPort {
+public interface JikanUserQueryPort {
     List<RandomUserJikan> findRandomUsers(int count);
 
     UserJikan findUserByUsername(String username);
 
-    
+
 }
