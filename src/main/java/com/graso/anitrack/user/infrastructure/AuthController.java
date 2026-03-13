@@ -4,11 +4,11 @@ import com.graso.anitrack.external.myanimelist.dto.ResponseTokenRequest;
 import com.graso.anitrack.user.application.port.in.LoginWithMyAnimeListUseCase;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,7 +33,7 @@ public class AuthController {
     }
 
     @GetMapping("mal/url")
-    public ResponseEntity<Map<String, String>> getUrl(HttpSession session) {
+    public ResponseEntity<Map<String, String>> getUrl(HttpServletResponse session) {
         String url = loginWithMyAnimeListUseCase.generateAuthorizationUrl(session);
         Map<String, String> response = Map.of("url", url);
         return new ResponseEntity<Map<String, String>>(response, HttpStatus.OK);
@@ -43,12 +43,13 @@ public class AuthController {
     public void loginWithMAL(
             @RequestParam String code,
             @RequestParam String state,
-            HttpSession session,
-            HttpServletResponse response
+            HttpServletResponse response,
+            @CookieValue("mal_oauth_state") String savedState,
+            @CookieValue("mal_code_verifier") String codeVerifier
     ) throws IOException {
 
         ResponseTokenRequest token =
-                loginWithMyAnimeListUseCase.loginWithMyAnimeList(code, state, session);
+                loginWithMyAnimeListUseCase.loginWithMyAnimeList(code, state, savedState, codeVerifier);
 
         Cookie accessCookie = new Cookie("access_token", token.accessToken());
         accessCookie.setHttpOnly(true);
