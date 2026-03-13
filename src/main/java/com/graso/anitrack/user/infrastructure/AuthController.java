@@ -1,11 +1,13 @@
 package com.graso.anitrack.user.infrastructure;
 
 import com.graso.anitrack.external.myanimelist.dto.ResponseTokenRequest;
+import com.graso.anitrack.user.application.dto.OAuthAuthorization;
 import com.graso.anitrack.user.application.port.in.LoginWithMyAnimeListUseCase;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Map;
 
 @Controller
@@ -32,11 +35,32 @@ public class AuthController {
 
     }
 
-    @GetMapping("mal/url")
-    public ResponseEntity<Map<String, String>> getUrl(HttpServletResponse session) {
-        String url = loginWithMyAnimeListUseCase.generateAuthorizationUrl(session);
-        Map<String, String> response = Map.of("url", url);
-        return new ResponseEntity<Map<String, String>>(response, HttpStatus.OK);
+
+    @GetMapping("/mal/url")
+    public ResponseEntity<Map<String, String>> getUrl(HttpServletResponse response) {
+
+        OAuthAuthorization auth = loginWithMyAnimeListUseCase.generateAuthorizationUrl();
+
+        ResponseCookie stateCookie = ResponseCookie.from("mal_oauth_state", auth.state())
+                .httpOnly(true)
+                .secure(inProduction)
+                .sameSite(inProduction ? "None" : "Lax")
+                .path("/")
+                .maxAge(Duration.ofMinutes(5))
+                .build();
+
+        ResponseCookie verifierCookie = ResponseCookie.from("mal_code_verifier", auth.codeVerifier())
+                .httpOnly(true)
+                .secure(inProduction)
+                .sameSite(inProduction ? "None" : "Lax")
+                .path("/")
+                .maxAge(Duration.ofMinutes(5))
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, stateCookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, verifierCookie.toString());
+
+        return ResponseEntity.ok(Map.of("url", auth.authorizationUrl()));
     }
 
     @GetMapping("/mal/login")

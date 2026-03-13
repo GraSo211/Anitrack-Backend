@@ -29,7 +29,7 @@ public class MalAuthAdapter implements AuthPort {
 
     @Override
     public ResponseTokenRequest loginUser(String code, String codeVerifier) {
-        String url = backendUrl + "/auth/mal/login";
+        String url = backendUrl + "/api/v1/auth/mal/login";
         ResponseTokenRequest token = myAnimeListApiClient.getBearerToken(clientId, clientSecret, code, url, codeVerifier);
         System.out.println(token.accessToken());
 
