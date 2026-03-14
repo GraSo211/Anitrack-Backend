@@ -17,9 +17,6 @@ spring:
       ddl-auto: update
     show-sql: true
 
-logging:
-  level:
-    web: DEBUG
 
 mal:
   client-id: ${MAL_CLIENT_ID}

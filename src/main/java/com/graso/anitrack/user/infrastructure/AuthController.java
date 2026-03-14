@@ -3,9 +3,10 @@ package com.graso.anitrack.user.infrastructure;
 import com.graso.anitrack.external.myanimelist.dto.ResponseTokenRequest;
 import com.graso.anitrack.user.application.dto.OAuthAuthorization;
 import com.graso.anitrack.user.application.port.in.LoginWithMyAnimeListUseCase;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,7 +45,6 @@ public class AuthController {
         );
     }
 
-
     @GetMapping("/mal/login")
     public void loginWithMAL(
             @RequestParam String code,
@@ -60,27 +60,29 @@ public class AuthController {
         String[] parts = decodedState.split(":");
 
         String codeVerifier = parts[0];
-        String randomState = parts[1];
 
         ResponseTokenRequest token =
                 loginWithMyAnimeListUseCase.loginWithMyAnimeList(code, codeVerifier);
 
-        Cookie accessCookie = new Cookie("access_token", token.accessToken());
-        accessCookie.setHttpOnly(true);
-        accessCookie.setPath("/");
-        accessCookie.setMaxAge(token.expiresIn());
-        accessCookie.setSecure(inProduction); // true en producción
-        response.addCookie(accessCookie);
-
-        Cookie refreshCookie = new Cookie("refresh_token", token.refreshToken());
-        refreshCookie.setHttpOnly(true);
-        refreshCookie.setPath("/");
-        refreshCookie.setMaxAge(60 * 60 * 24 * 30);
-        refreshCookie.setSecure(inProduction); // true en producción
-        response.addCookie(refreshCookie);
+        ResponseCookie accessCookie = ResponseCookie.from("access_token", token.accessToken())
+                .httpOnly(true)
+                .secure(inProduction)
+                .sameSite(inProduction ? "None" : "Lax")
+                .path("/")
+                .maxAge(token.expiresIn())
+                .build();
+        System.out.println("la cookiea ccess token es: " + accessCookie);
+        ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", token.refreshToken())
+                .httpOnly(true)
+                .secure(inProduction)
+                .sameSite(inProduction ? "None" : "Lax")
+                .path("/")
+                .maxAge(60 * 60 * 24 * 30)
+                .build();
+        System.out.println("la cookiea refresh  es: " + refreshCookie);
+        response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
         response.sendRedirect(frontendUrl + "/perfil");
     }
-
-
 }

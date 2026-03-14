@@ -42,6 +42,9 @@ public class UserController {
 
     @GetMapping("/me")
     public ResponseEntity<User> getMyUser(@CookieValue("access_token") String token) {
+
+        System.out.println("llamamos a el get de user controller /me y el token en la cookie es:" + token);
+
         User user = getMyUserUseCase.getMyUser(token);
         return ResponseEntity.ok(user);
     }
