@@ -9,8 +9,6 @@ public interface LoginWithMyAnimeListUseCase {
 
     ResponseTokenRequest loginWithMyAnimeList(
             String code,
-            String state,
-            String savedState,
-            String codeVerifier
+            String state
     );
 }

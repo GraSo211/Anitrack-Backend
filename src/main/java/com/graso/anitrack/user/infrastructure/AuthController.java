@@ -6,17 +6,15 @@ import com.graso.anitrack.user.application.port.in.LoginWithMyAnimeListUseCase;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
-import java.time.Duration;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Map;
 
 @Controller
@@ -37,43 +35,35 @@ public class AuthController {
 
 
     @GetMapping("/mal/url")
-    public ResponseEntity<Map<String, String>> getUrl(HttpServletResponse response) {
+    public ResponseEntity<Map<String, String>> getUrl() {
 
         OAuthAuthorization auth = loginWithMyAnimeListUseCase.generateAuthorizationUrl();
 
-        ResponseCookie stateCookie = ResponseCookie.from("mal_oauth_state", auth.state())
-                .httpOnly(true)
-                .secure(inProduction)
-                .sameSite(inProduction ? "None" : "Lax")
-                .path("/")
-                .maxAge(Duration.ofMinutes(5))
-                .build();
-
-        ResponseCookie verifierCookie = ResponseCookie.from("mal_code_verifier", auth.codeVerifier())
-                .httpOnly(true)
-                .secure(inProduction)
-                .sameSite(inProduction ? "None" : "Lax")
-                .path("/")
-                .maxAge(Duration.ofMinutes(5))
-                .build();
-
-        response.addHeader(HttpHeaders.SET_COOKIE, stateCookie.toString());
-        response.addHeader(HttpHeaders.SET_COOKIE, verifierCookie.toString());
-
-        return ResponseEntity.ok(Map.of("url", auth.authorizationUrl()));
+        return ResponseEntity.ok(
+                Map.of("url", auth.authorizationUrl())
+        );
     }
+
 
     @GetMapping("/mal/login")
     public void loginWithMAL(
             @RequestParam String code,
             @RequestParam String state,
-            HttpServletResponse response,
-            @CookieValue("mal_oauth_state") String savedState,
-            @CookieValue("mal_code_verifier") String codeVerifier
+            HttpServletResponse response
     ) throws IOException {
 
+        String decodedState = new String(
+                Base64.getUrlDecoder().decode(state),
+                StandardCharsets.UTF_8
+        );
+
+        String[] parts = decodedState.split(":");
+
+        String codeVerifier = parts[0];
+        String randomState = parts[1];
+
         ResponseTokenRequest token =
-                loginWithMyAnimeListUseCase.loginWithMyAnimeList(code, state, savedState, codeVerifier);
+                loginWithMyAnimeListUseCase.loginWithMyAnimeList(code, codeVerifier);
 
         Cookie accessCookie = new Cookie("access_token", token.accessToken());
         accessCookie.setHttpOnly(true);

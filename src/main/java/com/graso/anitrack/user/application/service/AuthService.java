@@ -7,6 +7,7 @@ import com.graso.anitrack.user.application.port.out.AuthPort;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.UUID;
@@ -40,33 +41,32 @@ public class AuthService implements LoginWithMyAnimeListUseCase {
     @Override
     public OAuthAuthorization generateAuthorizationUrl() {
 
-        String state = UUID.randomUUID().toString();
+        String randomState = UUID.randomUUID().toString();
         String codeVerifier = generateCodeVerifier();
+
+        String combinedState = codeVerifier + ":" + randomState;
+
+        String encodedState = Base64.getUrlEncoder()
+                .withoutPadding()
+                .encodeToString(combinedState.getBytes(StandardCharsets.UTF_8));
 
         String url =
                 "https://myanimelist.net/v1/oauth2/authorize"
                         + "?response_type=code"
                         + "&client_id=" + clientId
                         + "&redirect_uri=" + backendUrl + "/api/v1/auth/mal/login"
-                        + "&state=" + state
+                        + "&state=" + encodedState
                         + "&code_challenge=" + codeVerifier
                         + "&code_challenge_method=plain";
 
-        return new OAuthAuthorization(url, state, codeVerifier);
+        return new OAuthAuthorization(url);
     }
 
     @Override
     public ResponseTokenRequest loginWithMyAnimeList(
             String code,
-            String state,
-            String savedState,
             String codeVerifier
     ) {
-
-        if (!state.equals(savedState)) {
-            throw new RuntimeException("Invalid OAuth state");
-        }
-
         return authPort.loginUser(code, codeVerifier);
     }
 }
