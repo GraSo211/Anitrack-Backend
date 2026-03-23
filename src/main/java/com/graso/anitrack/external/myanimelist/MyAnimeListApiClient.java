@@ -1,7 +1,10 @@
 package com.graso.anitrack.external.myanimelist;
 
+import com.graso.anitrack.animelist.domain.AnimeList;
+import com.graso.anitrack.external.myanimelist.dto.ResponseAnimeListRequest;
 import com.graso.anitrack.external.myanimelist.dto.ResponseTokenRequest;
 import com.graso.anitrack.external.myanimelist.dto.ResponseUserRequest;
+import com.graso.anitrack.external.myanimelist.mapper.MyAnimeListAnimeListMapper;
 import com.graso.anitrack.external.myanimelist.mapper.MyAnimeListUserMapper;
 import com.graso.anitrack.user.domain.User;
 import lombok.AllArgsConstructor;
@@ -16,6 +19,7 @@ public class MyAnimeListApiClient {
     private WebClient myAnimeListWebClientFirstVersion;
     private WebClient myAnimeListWebClientSecondVersion;
     private MyAnimeListUserMapper myAnimeListUserMapper;
+    private MyAnimeListAnimeListMapper myAnimeListAnimeListMapper;
 
     public ResponseTokenRequest getBearerToken(
             String clientId,
@@ -54,5 +58,15 @@ public class MyAnimeListApiClient {
         return myAnimeListUserMapper.responseUserRequestToUser(responseUserRequest);
     }
 
+    public AnimeList getAnimeList(String token, String status) {
+        ResponseAnimeListRequest responseAnimeListRequest = myAnimeListWebClientSecondVersion.get()
+                .uri("/v2/users/@me/animelist?status=" + status + "&fields=list_status")
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(token))
+                .retrieve()
+                .bodyToMono(ResponseAnimeListRequest.class)
+                .block();
+        return myAnimeListAnimeListMapper.toAnimeList(responseAnimeListRequest);
+    }
+    
 
 }

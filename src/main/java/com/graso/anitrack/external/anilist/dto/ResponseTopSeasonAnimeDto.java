@@ -7,7 +7,7 @@ public record ResponseTopSeasonAnimeDto(Data data) {
             AnimeData topScored, AnimeData topPopular
     ) {
         public record AnimeData(List<Media> media) {
-            public record Media(int id, Title title, String bannerImage, int meanScore, int popularity) {
+            public record Media(int id, Title title, String bannerImage, Integer meanScore, int popularity) {
                 public record Title(String romaji, String english) {
                 }
             }
