@@ -58,31 +58,53 @@ public class AuthController {
         );
 
         String[] parts = decodedState.split(":");
-
         String codeVerifier = parts[0];
 
         ResponseTokenRequest token =
                 loginWithMyAnimeListUseCase.loginWithMyAnimeList(code, codeVerifier);
 
-        ResponseCookie accessCookie = ResponseCookie.from("access_token", token.accessToken())
-                .httpOnly(true)
-                .secure(inProduction)
-                .sameSite(inProduction ? "None" : "Lax")
-                .path("/")
+        ResponseCookie.ResponseCookieBuilder accessBuilder =
+                ResponseCookie.from("access_token", token.accessToken())
+                        .httpOnly(true)
+                        .path("/");
+
+        ResponseCookie.ResponseCookieBuilder refreshBuilder =
+                ResponseCookie.from("refresh_token", token.refreshToken())
+                        .httpOnly(true)
+                        .path("/");
+
+        if (inProduction) {
+            accessBuilder
+                    .secure(true)
+                    .sameSite("None")
+                    .domain(".anitrack.online");
+
+            refreshBuilder
+                    .secure(true)
+                    .sameSite("None")
+                    .domain(".anitrack.online");
+        } else {
+            accessBuilder
+                    .secure(false)
+                    .sameSite("Lax");
+
+            refreshBuilder
+                    .secure(false)
+                    .sameSite("Lax");
+        }
+
+        ResponseCookie accessCookie = accessBuilder
                 .maxAge(token.expiresIn())
                 .build();
-        System.out.println("la cookiea ccess token es: " + accessCookie);
-        ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", token.refreshToken())
-                .httpOnly(true)
-                .secure(inProduction)
-                .sameSite(inProduction ? "None" : "Lax")
-                .path("/")
+
+        ResponseCookie refreshCookie = refreshBuilder
                 .maxAge(60 * 60 * 24 * 30)
                 .build();
-        System.out.println("la cookiea refresh  es: " + refreshCookie);
+
         response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
         response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
-        response.sendRedirect(frontendUrl + "/perfil");
+        response.setStatus(HttpServletResponse.SC_FOUND);
+        response.setHeader("Location", frontendUrl + "/perfil");
     }
 }
