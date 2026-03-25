@@ -19,7 +19,7 @@ public record ResponseEpisodesJikanDto(
             String title_japanese,
             String title_romanji,
             String aired,
-            float score,
+            Float score,
             boolean filler,
             boolean recap,
             String forum_url

@@ -2,6 +2,7 @@ package com.graso.anitrack.animelist.infrastructure.adapter;
 
 import com.graso.anitrack.animelist.application.out.AnimeListQueryPort;
 import com.graso.anitrack.animelist.domain.AnimeList;
+import com.graso.anitrack.animelist.domain.AnimeStatus;
 import com.graso.anitrack.external.myanimelist.MyAnimeListApiClient;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -16,5 +17,10 @@ public class MyAnimeListAdapter implements AnimeListQueryPort {
         return myAnimeListApiClient.getAnimeList(token, status);
     }
 
-    
+    @Override
+    public AnimeStatus findAnimeListStatus(String token, int id) {
+        return myAnimeListApiClient.getAnimeStatus(token, id);
+    }
+
+
 }

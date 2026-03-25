@@ -1,15 +1,14 @@
 package com.graso.anitrack.animelist.infrastructure.controller;
 
+import com.graso.anitrack.animelist.application.in.GetAnimeListStatusUseCase;
 import com.graso.anitrack.animelist.application.in.GetAnimeListUseCase;
 import com.graso.anitrack.animelist.domain.AnimeList;
+import com.graso.anitrack.animelist.domain.AnimeStatus;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/api/v1/animeList")
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class AnimeListController {
 
     GetAnimeListUseCase getAnimeListUseCase;
+    GetAnimeListStatusUseCase getAnimeListStatusUseCase;
 
 
     @GetMapping("")
@@ -24,4 +24,12 @@ public class AnimeListController {
         AnimeList animeList = getAnimeListUseCase.getAnimeListUseCase(token, status);
         return new ResponseEntity<AnimeList>(animeList, HttpStatus.OK);
     }
+
+    @GetMapping("/{id}/status")
+    public ResponseEntity<AnimeStatus> getAnimeStatus(@CookieValue("access_token") String token, @PathVariable int id) {
+        AnimeStatus animeStatus = getAnimeListStatusUseCase.getAnimeListStatus(token, id);
+        return new ResponseEntity<AnimeStatus>(animeStatus, HttpStatus.OK);
+    }
+
+
 }
