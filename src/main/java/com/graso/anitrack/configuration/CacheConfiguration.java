@@ -27,7 +27,6 @@ public class CacheConfiguration {
                 buildCache("releasingAnimesCache", 1, TimeUnit.HOURS, 1000),
 
                 // 1 día
-                buildCache("animeByIdCache", 1, TimeUnit.DAYS, 2000),
                 buildCache("seasonTrendCache", 1, TimeUnit.DAYS, 1000),
 
                 // 7 días

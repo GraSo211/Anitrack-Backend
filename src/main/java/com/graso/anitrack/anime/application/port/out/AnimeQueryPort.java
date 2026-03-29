@@ -11,7 +11,9 @@ import java.util.List;
 import java.util.Map;
 
 public interface AnimeQueryPort {
-    Anime findById(Long id);
+    Anime findById(int id);
+
+    Anime findByMalId(int id);
 
     Map<String, String> getBannerImage();
 

@@ -35,8 +35,15 @@ public class AnimeController {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<Anime> getAnimeById(@PathVariable Long id) {
+    public ResponseEntity<Anime> getAnimeById(@PathVariable int id) {
         Anime anime = getAnimeByIdUseCase.getById(id);
+        return new ResponseEntity<>(anime, HttpStatus.OK);
+    }
+
+    @GetMapping("/mal/{id}")
+    public ResponseEntity<Anime> getAnimeByMalId(@PathVariable int id) {
+        System.out.println("Received request for anime with MAL ID: " + id);
+        Anime anime = getAnimeByIdUseCase.getByMalId(id);
         return new ResponseEntity<>(anime, HttpStatus.OK);
     }
 

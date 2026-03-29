@@ -12,8 +12,8 @@ public record ResponseFetchByIdAniListDto(Data data) {
     ) {
 
         public record Media(
-                Long id,
-                Long idMal,
+                int id,
+                Integer idMal,
 
                 MediaType type,
                 Title title,

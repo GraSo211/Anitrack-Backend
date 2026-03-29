@@ -22,8 +22,13 @@ public class AniListAdapter implements AnimeQueryPort {
     private AniListApiClient aniListApiClient;
 
     @Override
-    public Anime findById(Long id) {
+    public Anime findById(int id) {
         return aniListApiClient.fetchAnimeById(id);
+    }
+
+    @Override
+    public Anime findByMalId(int id) {
+        return aniListApiClient.fetchAnimeByMalId(id);
     }
 
     @Override

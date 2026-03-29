@@ -26,7 +26,7 @@ public class AniListAnimeMapper {
                 Safelist.basic()
         );
         return new Anime(
-                dto.id().intValue(),
+                dto.id(),
                 dto.idMal() != null ? dto.idMal().intValue() : null,
 
                 mapTitle(dto.title()),
@@ -193,7 +193,7 @@ public class AniListAnimeMapper {
         return new MediaRelations(
                 relations.edges().stream()
                         .map(edge -> new MediaRelation(
-                                edge.node().id().intValue(),
+                                edge.node().id(),
                                 TypeMediaRelation.valueOf(edge.relationType()),
                                 edge.node().type(),
                                 edge.node().title().romaji(),

@@ -23,12 +23,21 @@ public class AnimeService implements GetAnimeByIdUseCase, GetHomepageBannerAnime
     EpisodeQueryPort episodeQueryPort;
 
     @Override
-    public Anime getById(Long id) {
+    public Anime getById(int id) {
 
         Anime anime = animeQueryPort.findById(id);
         anime.keepOnlyAnimeRelations();
         return anime;
     }
+
+    @Override
+    public Anime getByMalId(int id) {
+
+        Anime anime = animeQueryPort.findByMalId(id);
+        anime.keepOnlyAnimeRelations();
+        return anime;
+    }
+
 
     @Override
     public Map<String, String> getBanner() {

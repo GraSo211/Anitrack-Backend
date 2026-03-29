@@ -28,21 +28,22 @@ public class AniListApiClient {
     private <T> T executeQuery(String query, Map<String, Object> variables, Class<T> responseType) {
 
         PostQueryDto body = new PostQueryDto(query, variables);
-
+        System.out.println(body);
         return aniListWebClient
                 .post()
+                .uri("")
                 .bodyValue(body)
                 .retrieve()
                 .bodyToMono(responseType)
                 .block();
     }
 
-    @Cacheable(value = "animeByIdCache", key = "#id", unless = "#result == null")
-    public Anime fetchAnimeById(Long id) {
+
+    public Anime fetchAnimeById(int id) {
         final String query =
                 """
                          query($id:Int) {
-                           Media(id: $id) {
+                           Media(id: $id, type:ANIME) {
                              id
                              idMal
                              title {
@@ -122,6 +123,94 @@ public class AniListApiClient {
                          }   
                         """;
         ResponseFetchByIdAniListDto response = executeQuery(query, Map.of("id", id), ResponseFetchByIdAniListDto.class);
+
+        return aniListAnimeMapper.toDomain(response);
+    }
+
+    public Anime fetchAnimeByMalId(int id) {
+        final String query =
+                """
+                        query($idMal: Int) {
+                                       Media(idMal: $idMal, type:ANIME) {
+                                         id
+                                         idMal
+                                         title {
+                                           romaji
+                                           english
+                                         }
+                                         status
+                                         description(asHtml: true)
+                                         startDate {
+                                           year
+                                           month
+                                           day
+                                         }
+                                         endDate {
+                                           year
+                                           month
+                                           day
+                                         }
+                                         season
+                                         seasonYear
+                                         episodes
+                                         duration
+                                         countryOfOrigin
+                                         source
+                                         trailer {
+                                           id
+                                           site
+                                           thumbnail
+                                         }
+                                         coverImage {
+                                           extraLarge
+                                           large
+                                           medium
+                                           color
+                                         }
+                                         bannerImage
+                                         genres
+                                         synonyms
+                                         averageScore
+                                         popularity
+                                         relations {
+                                           edges {
+                                             relationType
+                                             node {
+                                               id
+                                               type
+                                               title {
+                                                 romaji
+                                               }
+                                               coverImage {
+                                                 extraLarge
+                                                 large
+                                                 medium
+                                                 color
+                                               }
+                                             }
+                                           }
+                                         }
+                                         studios {
+                                           edges {
+                                             isMain
+                                             node {
+                                               id
+                                               name
+                                             }
+                                           }
+                                         }
+                                         isAdult
+                                         nextAiringEpisode {
+                                           id
+                                           airingAt
+                                           timeUntilAiring
+                                           episode
+                                           mediaId
+                                         }
+                                       }
+                                     }
+                        """;
+        ResponseFetchByIdAniListDto response = executeQuery(query, Map.of("idMal", id), ResponseFetchByIdAniListDto.class);
 
         return aniListAnimeMapper.toDomain(response);
     }
