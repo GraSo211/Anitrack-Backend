@@ -2,9 +2,9 @@ package com.graso.anitrack.external.jikan.mapper;
 
 import com.graso.anitrack.external.jikan.dto.ResponseUserByIdJikanDto;
 import com.graso.anitrack.external.jikan.dto.ResponseUsersJikanDto;
-import com.graso.anitrack.user.domain.UserJikan.RandomUserJikan;
-import com.graso.anitrack.user.domain.UserJikan.Statistics;
-import com.graso.anitrack.user.domain.UserJikan.UserJikan;
+import com.graso.anitrack.user.domain.userjikan.RandomUserJikan;
+import com.graso.anitrack.user.domain.userjikan.Statistics;
+import com.graso.anitrack.user.domain.userjikan.UserJikan;
 import org.springframework.stereotype.Component;
 
 @Component

@@ -1,50 +1,42 @@
 package com.graso.anitrack.animelist.infrastructure.controller;
 
-import com.graso.anitrack.animelist.application.in.AddAnimeToListUseCase;
-import com.graso.anitrack.animelist.application.in.GetAnimeListStatusUseCase;
-import com.graso.anitrack.animelist.application.in.GetAnimeListUseCase;
+import com.graso.anitrack.animelist.application.service.AnimeListService;
 import com.graso.anitrack.animelist.domain.AnimeList;
 import com.graso.anitrack.animelist.domain.AnimeStatus;
 import com.graso.anitrack.animelist.infrastructure.dto.RequestBodyPatchAnimeToList;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
+@RestController
 @RequestMapping("/api/v1/animeList")
 @AllArgsConstructor
 public class AnimeListController {
 
-    GetAnimeListUseCase getAnimeListUseCase;
-    GetAnimeListStatusUseCase getAnimeListStatusUseCase;
-    AddAnimeToListUseCase addAnimeToListUseCase;
-
+    private final AnimeListService animeListService;
 
     @GetMapping("")
     public ResponseEntity<AnimeList> getAnimeList(@CookieValue("access_token") String token, @RequestParam(required = false, defaultValue = "") String status) {
-        AnimeList animeList = getAnimeListUseCase.getAnimeListUseCase(token, status);
-        return new ResponseEntity<AnimeList>(animeList, HttpStatus.OK);
+        AnimeList animeList = animeListService.getAnimeListUseCase(token, status);
+        return ResponseEntity.ok(animeList);
     }
 
     @GetMapping("/{id}/status")
     public ResponseEntity<AnimeStatus> getAnimeStatus(@CookieValue("access_token") String token, @PathVariable int id) {
-        AnimeStatus animeStatus = getAnimeListStatusUseCase.getAnimeListStatus(token, id);
-        return new ResponseEntity<AnimeStatus>(animeStatus, HttpStatus.OK);
+        AnimeStatus animeStatus = animeListService.getAnimeListStatus(token, id);
+        return ResponseEntity.ok(animeStatus);
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<AnimeStatus> postAnimeToList(@CookieValue("access_token") String token, @PathVariable int id) {
-        AnimeStatus animeStatus = addAnimeToListUseCase.addAnimeToList(token, id);
-        return new ResponseEntity<AnimeStatus>(animeStatus, HttpStatus.OK);
+        AnimeStatus animeStatus = animeListService.addAnimeToList(token, id);
+        return ResponseEntity.ok(animeStatus);
     }
 
     @PatchMapping("/{id}/update")
     public ResponseEntity<AnimeStatus> patchAnimeToList(@CookieValue("access_token") String token, @PathVariable int id, @RequestBody RequestBodyPatchAnimeToList body) {
-        AnimeStatus animeStatus = addAnimeToListUseCase.modifyAnimeToList(token, id, body.status(), body.score(), body.numEpisodes());
-        return new ResponseEntity<AnimeStatus>(animeStatus, HttpStatus.OK);
+        AnimeStatus animeStatus = animeListService.modifyAnimeToList(token, id, body.status(), body.score(), body.numEpisodes());
+        return ResponseEntity.ok(animeStatus);
     }
-
 
 }

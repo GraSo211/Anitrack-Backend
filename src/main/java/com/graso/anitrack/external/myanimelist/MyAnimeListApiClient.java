@@ -1,15 +1,12 @@
 package com.graso.anitrack.external.myanimelist;
 
-import com.graso.anitrack.animelist.domain.AnimeList;
-import com.graso.anitrack.animelist.domain.AnimeStatus;
 import com.graso.anitrack.external.myanimelist.dto.*;
-import com.graso.anitrack.external.myanimelist.mapper.MyAnimeListAnimeListMapper;
-import com.graso.anitrack.external.myanimelist.mapper.MyAnimeListStatusMapper;
-import com.graso.anitrack.external.myanimelist.mapper.MyAnimeListUserMapper;
-import com.graso.anitrack.user.domain.User;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+
+import java.time.Duration;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -19,9 +16,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class MyAnimeListApiClient {
     private WebClient myAnimeListWebClientFirstVersion;
     private WebClient myAnimeListWebClientSecondVersion;
-    private MyAnimeListUserMapper myAnimeListUserMapper;
-    private MyAnimeListAnimeListMapper myAnimeListAnimeListMapper;
-    private MyAnimeListStatusMapper myAnimeListStatusMapper;
 
     public ResponseTokenRequest getBearerToken(
             String clientId,
@@ -30,7 +24,6 @@ public class MyAnimeListApiClient {
             String redirectUri,
             String codeVerifier
     ) {
-
         return myAnimeListWebClientFirstVersion.post()
                 .uri("/v1/oauth2/token")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -45,61 +38,57 @@ public class MyAnimeListApiClient {
                 )
                 .retrieve()
                 .bodyToMono(ResponseTokenRequest.class)
-                .block();
-
+                .block(Duration.ofSeconds(10));
     }
 
-    public User getMyUser(String token) {
-        ResponseUserRequest responseUserRequest = myAnimeListWebClientSecondVersion.get()
+    public ResponseUserRequest getMyUser(String token) {
+        return myAnimeListWebClientSecondVersion.get()
                 .uri("/v2/users/@me?fields=anime_statistics")
                 .headers(headers -> headers.setBearerAuth(token))
                 .retrieve()
                 .bodyToMono(ResponseUserRequest.class)
-                .block();
-
-        return myAnimeListUserMapper.responseUserRequestToUser(responseUserRequest);
+                .block(Duration.ofSeconds(10));
     }
 
-    public AnimeList getAnimeList(String token, String status) {
-        ResponseAnimeListRequest responseAnimeListRequest = myAnimeListWebClientSecondVersion.get()
+    public ResponseAnimeListRequest getAnimeList(String token, String status) {
+        return myAnimeListWebClientSecondVersion.get()
                 .uri("/v2/users/@me/animelist?status=" + status + "&fields=list_status&limit=1000")
                 .headers(httpHeaders -> httpHeaders.setBearerAuth(token))
                 .retrieve()
                 .bodyToMono(ResponseAnimeListRequest.class)
-                .block();
-        return myAnimeListAnimeListMapper.toAnimeList(responseAnimeListRequest);
+                .block(Duration.ofSeconds(10));
     }
 
-    public AnimeStatus getAnimeStatus(String token, int id) {
-        ResponseAnimeStatusRequest responseAnimeStatusRequest = myAnimeListWebClientSecondVersion.get()
+    public ResponseAnimeStatusRequest getAnimeStatus(String token, int id) {
+        return myAnimeListWebClientSecondVersion.get()
                 .uri(String.format("v2/anime/%d?fields=my_list_status", id))
                 .headers(httpHeaders -> httpHeaders.setBearerAuth(token))
                 .retrieve()
                 .bodyToMono(ResponseAnimeStatusRequest.class)
-                .block();
-        return myAnimeListStatusMapper.toAnimeStatus(responseAnimeStatusRequest);
+                .block(Duration.ofSeconds(10));
     }
 
-    public AnimeStatus addAnimeToList(String token, int id) {
-        ResponseAnimeToListRequest responseAnimeToListRequest = myAnimeListWebClientSecondVersion.patch()
+    public ResponseAnimeToListRequest addAnimeToList(String token, int id) {
+        return myAnimeListWebClientSecondVersion.patch()
                 .uri(String.format("v2/anime/%d/my_list_status", id))
                 .headers(httpHeaders -> httpHeaders.setBearerAuth(token))
                 .retrieve()
                 .bodyToMono(ResponseAnimeToListRequest.class)
-                .block();
-        return myAnimeListStatusMapper.fromAnimeToListToAnimeStatus(responseAnimeToListRequest);
+                .block(Duration.ofSeconds(10));
     }
 
-    public AnimeStatus modifyAnimeToList(String token, int id, MultiValueMap<String, String> body) {
-        ResponseAnimeToListRequest responseAnimeToListRequest = myAnimeListWebClientSecondVersion.patch()
+    public ResponseAnimeToListRequest modifyAnimeToList(String token, int id, String status, int score, int numEpisodes) {
+        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+        body.add("status", status);
+        body.add("score", String.valueOf(score));
+        body.add("num_watched_episodes", String.valueOf(numEpisodes));
+
+        return myAnimeListWebClientSecondVersion.patch()
                 .uri(String.format("v2/anime/%d/my_list_status", id))
                 .headers(httpHeaders -> httpHeaders.setBearerAuth(token))
                 .body(BodyInserters.fromFormData(body))
                 .retrieve()
-                .bodyToMono(ResponseAnimeToListRequest.class)
-                .block();
-        return myAnimeListStatusMapper.fromAnimeToListToAnimeStatus(responseAnimeToListRequest);
-    }
-
-
+.bodyToMono(ResponseAnimeToListRequest.class)
+                .block(Duration.ofSeconds(10));
+}
 }

@@ -15,7 +15,7 @@ public class MyAnimeListAnimeListMapper {
     public AnimeList toAnimeList(ResponseAnimeListRequest response) {
 
         if (response == null || response.data() == null) {
-            throw new RuntimeException("fallo al obtener la anime list");
+            throw new RuntimeException("Failed to fetch the anime list");
         }
 
         List<AnimeItem> items = response.data().stream()

@@ -4,19 +4,6 @@ spring:
   docker:
     compose:
       enabled: false
-  datasource:
-    url: ${DATABASE_URL}
-    driver-class-name: org.postgresql.Driver
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          jwk-set-uri: https://www.googleapis.com/oauth2/v3/certs
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-
 
 mal:
   client-id: ${MAL_CLIENT_ID}

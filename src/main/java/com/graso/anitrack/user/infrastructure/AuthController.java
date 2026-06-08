@@ -2,7 +2,7 @@ package com.graso.anitrack.user.infrastructure;
 
 import com.graso.anitrack.external.myanimelist.dto.ResponseTokenRequest;
 import com.graso.anitrack.user.application.dto.OAuthAuthorization;
-import com.graso.anitrack.user.application.port.in.LoginWithMyAnimeListUseCase;
+import com.graso.anitrack.user.application.service.AuthService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -23,22 +23,20 @@ import java.util.Map;
 
 public class AuthController {
 
-    LoginWithMyAnimeListUseCase loginWithMyAnimeListUseCase;
+    AuthService authService;
     String frontendUrl;
     boolean inProduction;
 
-    public AuthController(LoginWithMyAnimeListUseCase loginWithMyAnimeListUseCase, @Value("${application.frontend-url}") String frontendUrl, @Value("${application.in-production}") boolean inProduction) {
-        this.loginWithMyAnimeListUseCase = loginWithMyAnimeListUseCase;
+    public AuthController(AuthService authService, @Value("${application.frontend-url}") String frontendUrl, @Value("${application.in-production}") boolean inProduction) {
+        this.authService = authService;
         this.frontendUrl = frontendUrl;
         this.inProduction = inProduction;
 
     }
 
-
     @GetMapping("/mal/url")
     public ResponseEntity<Map<String, String>> getUrl() {
-
-        OAuthAuthorization auth = loginWithMyAnimeListUseCase.generateAuthorizationUrl();
+        OAuthAuthorization auth = authService.generateAuthorizationUrl();
 
         return ResponseEntity.ok(
                 Map.of("url", auth.authorizationUrl())
@@ -51,17 +49,28 @@ public class AuthController {
             @RequestParam String state,
             HttpServletResponse response
     ) throws IOException {
-
         String decodedState = new String(
                 Base64.getUrlDecoder().decode(state),
                 StandardCharsets.UTF_8
         );
 
         String[] parts = decodedState.split(":");
+
+        if (parts.length < 2) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid state parameter");
+            return;
+        }
+
         String codeVerifier = parts[0];
+        String randomState = parts[1];
+
+        if (!authService.validateState(randomState)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "State mismatch - possible CSRF attack");
+            return;
+        }
 
         ResponseTokenRequest token =
-                loginWithMyAnimeListUseCase.loginWithMyAnimeList(code, codeVerifier);
+                authService.loginWithMyAnimeList(code, codeVerifier);
 
         ResponseCookie.ResponseCookieBuilder accessBuilder =
                 ResponseCookie.from("access_token", token.accessToken())

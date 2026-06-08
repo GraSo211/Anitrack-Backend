@@ -1,20 +1,13 @@
 package com.graso.anitrack.external.anilist;
 
-
-import com.graso.anitrack.anime.application.dto.AnimeCard;
-import com.graso.anitrack.anime.application.dto.AnimeReleasing;
-import com.graso.anitrack.anime.application.dto.AnimeTopSeason;
-import com.graso.anitrack.anime.domain.anime.Anime;
 import com.graso.anitrack.anime.domain.anime.valueobject.MediaSeason;
-import com.graso.anitrack.anime.domain.genre.Genre;
-import com.graso.anitrack.anime.domain.genre.Tag;
 import com.graso.anitrack.external.anilist.dto.*;
-import com.graso.anitrack.external.anilist.mapper.AniListAnimeMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -22,197 +15,106 @@ import java.util.*;
 @AllArgsConstructor
 public class AniListApiClient {
     private WebClient aniListWebClient;
-    private AniListAnimeMapper aniListAnimeMapper;
-
 
     private <T> T executeQuery(String query, Map<String, Object> variables, Class<T> responseType) {
-
         PostQueryDto body = new PostQueryDto(query, variables);
-        System.out.println(body);
         return aniListWebClient
                 .post()
                 .uri("")
                 .bodyValue(body)
                 .retrieve()
                 .bodyToMono(responseType)
-                .block();
+                .block(Duration.ofSeconds(10));
     }
 
+    private static final String FETCH_ANIME_BY_ID_QUERY = """
+            query($id: Int, $idMal: Int) {
+              Media(id: $id, idMal: $idMal, type: ANIME) {
+                id
+                idMal
+                title {
+                  romaji
+                  english
+                }
+                status
+                description(asHtml: true)
+                startDate {
+                  year
+                  month
+                  day
+                }
+                endDate {
+                  year
+                  month
+                  day
+                }
+                season
+                seasonYear
+                episodes
+                duration
+                countryOfOrigin
+                source
+                trailer {
+                  id
+                  site
+                  thumbnail
+                }
+                coverImage {
+                  extraLarge
+                  large
+                  medium
+                  color
+                }
+                bannerImage
+                genres
+                synonyms
+                averageScore
+                popularity
+                relations {
+                  edges {
+                    relationType
+                    node {
+                      id
+                      type
+                      title {
+                        romaji
+                      }
+                      coverImage {
+                        extraLarge
+                        large
+                        medium
+                        color
+                      }
+                    }
+                  }
+                }
+                studios {
+                  edges {
+                    isMain
+                    node {
+                      id
+                      name
+                    }
+                  }
+                }
+                isAdult
+                nextAiringEpisode {
+                  id
+                  airingAt
+                  timeUntilAiring
+                  episode
+                  mediaId
+                }
+              }
+            }
+            """;
 
-    public Anime fetchAnimeById(int id) {
-        final String query =
-                """
-                         query($id:Int) {
-                           Media(id: $id, type:ANIME) {
-                             id
-                             idMal
-                             title {
-                               romaji
-                               english
-                             }
-                             status
-                             description(asHtml: true)
-                             startDate{
-                                year
-                                month
-                                day
-                             }
-                             endDate{
-                                year
-                                month
-                                day
-                             }
-                             season
-                             seasonYear
-                             episodes
-                             duration
-                             countryOfOrigin
-                             source
-                             trailer{
-                                 id
-                                 site
-                                 thumbnail
-                             }
-                             coverImage{
-                                extraLarge
-                                large
-                                medium
-                                color
-                             }
-                             bannerImage
-                             genres
-                             synonyms
-                             averageScore
-                             popularity
-                             relations {
-                               edges {
-                                 relationType
-                                 node {
-                                   id
-                                   type
-                                   title{
-                                        romaji
-                                   }
-                                   coverImage{
-                                        extraLarge
-                                        large
-                                        medium
-                                        color
-                                   }
-                                 }
-                               }
-                             }
-                             studios{
-                                edges{
-                                    isMain
-                                    node{
-                                        id
-                                        name
-                                    }
-                                }
-                             }
-                             isAdult
-                             nextAiringEpisode{
-                                id
-                                airingAt
-                                timeUntilAiring
-                                episode
-                                mediaId
-                             }
-                           }
-                         }   
-                        """;
-        ResponseFetchByIdAniListDto response = executeQuery(query, Map.of("id", id), ResponseFetchByIdAniListDto.class);
-
-        return aniListAnimeMapper.toDomain(response);
+    public ResponseFetchByIdAniListDto fetchAnimeById(int id) {
+        return executeQuery(FETCH_ANIME_BY_ID_QUERY, Map.of("id", id), ResponseFetchByIdAniListDto.class);
     }
 
-    public Anime fetchAnimeByMalId(int id) {
-        final String query =
-                """
-                        query($idMal: Int) {
-                                       Media(idMal: $idMal, type:ANIME) {
-                                         id
-                                         idMal
-                                         title {
-                                           romaji
-                                           english
-                                         }
-                                         status
-                                         description(asHtml: true)
-                                         startDate {
-                                           year
-                                           month
-                                           day
-                                         }
-                                         endDate {
-                                           year
-                                           month
-                                           day
-                                         }
-                                         season
-                                         seasonYear
-                                         episodes
-                                         duration
-                                         countryOfOrigin
-                                         source
-                                         trailer {
-                                           id
-                                           site
-                                           thumbnail
-                                         }
-                                         coverImage {
-                                           extraLarge
-                                           large
-                                           medium
-                                           color
-                                         }
-                                         bannerImage
-                                         genres
-                                         synonyms
-                                         averageScore
-                                         popularity
-                                         relations {
-                                           edges {
-                                             relationType
-                                             node {
-                                               id
-                                               type
-                                               title {
-                                                 romaji
-                                               }
-                                               coverImage {
-                                                 extraLarge
-                                                 large
-                                                 medium
-                                                 color
-                                               }
-                                             }
-                                           }
-                                         }
-                                         studios {
-                                           edges {
-                                             isMain
-                                             node {
-                                               id
-                                               name
-                                             }
-                                           }
-                                         }
-                                         isAdult
-                                         nextAiringEpisode {
-                                           id
-                                           airingAt
-                                           timeUntilAiring
-                                           episode
-                                           mediaId
-                                         }
-                                       }
-                                     }
-                        """;
-        ResponseFetchByIdAniListDto response = executeQuery(query, Map.of("idMal", id), ResponseFetchByIdAniListDto.class);
-
-        return aniListAnimeMapper.toDomain(response);
+    public ResponseFetchByIdAniListDto fetchAnimeByMalId(int id) {
+        return executeQuery(FETCH_ANIME_BY_ID_QUERY, Map.of("idMal", id), ResponseFetchByIdAniListDto.class);
     }
 
     @Cacheable(value = "bannerImageCache", unless = "#result == null")
@@ -248,12 +150,10 @@ public class AniListApiClient {
                 .findFirst()
                 .orElse(null);
 
-
-        return Map.of("link", imageLink);
+        return imageLink != null ? Map.of("link", imageLink) : null;
     }
 
-    @Cacheable(value = "topSeasonCache", unless = "#result == null")
-    public AnimeTopSeason fetchTopAnimeSeason() {
+    public ResponseTopSeasonAnimeDto fetchTopAnimeSeason() {
         String actualSeason = MediaSeason.current().toString();
         int actualYear = LocalDate.now().getYear();
         final String query = String.format("""
@@ -297,36 +197,11 @@ public class AniListApiClient {
                     }
                 """, actualSeason, actualYear, actualSeason, actualYear
         );
-        ResponseTopSeasonAnimeDto response = executeQuery(query, null, ResponseTopSeasonAnimeDto.class);
-
-
-        if (response == null || response.data() == null) {
-            return null;
-        }
-        ResponseTopSeasonAnimeDto.Data.AnimeData topScored = response.data().topScored();
-        ResponseTopSeasonAnimeDto.Data.AnimeData topPopular = response.data().topPopular();
-        List<ResponseTopSeasonAnimeDto.Data.AnimeData.Media> listAnime = new ArrayList<>();
-        listAnime.addAll(topScored.media());
-        listAnime.addAll(topPopular.media());
-        listAnime = listAnime.stream().filter(i -> i.bannerImage() != null).toList();
-        listAnime = listAnime.stream().sorted(
-                Comparator
-                        .comparing(ResponseTopSeasonAnimeDto.Data.AnimeData.Media::meanScore,
-                                Comparator.nullsLast(Comparator.reverseOrder()))
-                        .thenComparing(ResponseTopSeasonAnimeDto.Data.AnimeData.Media::popularity,
-                                Comparator.nullsLast(Comparator.reverseOrder()))
-        ).toList();
-
-        ResponseTopSeasonAnimeDto.Data.AnimeData.Media topSeasonAnime = listAnime.stream().findFirst().orElse(null);
-        if (topSeasonAnime == null) {
-            return null;
-        }
-        return aniListAnimeMapper.toAnimeTopSeason(topSeasonAnime);
+        return executeQuery(query, null, ResponseTopSeasonAnimeDto.class);
     }
 
-
     @Cacheable(value = "releasingAnimesCache", unless = "#result == null")
-    public List<AnimeReleasing> fetchReleasingAnimes() {
+    public List<ResponseReleasingAnimesAniListDto.Data.Page.Media> fetchReleasingAnimes() {
         final String query = """
                         query ($page: Int, $perPage: Int) {
                           Page(page: $page, perPage: $perPage) {
@@ -360,30 +235,24 @@ public class AniListApiClient {
                 """;
         int nPage = 1;
         int lastPage = 1;
-        List<AnimeReleasing> releasingAnimes = new ArrayList<>();
+        int maxPages = 3;
+        List<ResponseReleasingAnimesAniListDto.Data.Page.Media> releasingAnimes = new ArrayList<>();
         do {
             ResponseReleasingAnimesAniListDto response = executeQuery(query, Map.of("page", nPage, "perPage", 50), ResponseReleasingAnimesAniListDto.class);
-
 
             if (response == null || response.data() == null) {
                 return Collections.emptyList();
             }
             lastPage = response.data().page().pageInfo().lastPage();
             nPage++;
-            releasingAnimes.addAll(response.data()
-                    .page()
-                    .media()
-                    .stream()
-                    .map(anime -> aniListAnimeMapper.toAnimeReleasing(anime))
-                    .toList());
+            releasingAnimes.addAll(response.data().page().media());
         }
-        while (nPage <= lastPage);
+        while (nPage <= lastPage && nPage <= maxPages);
 
         return releasingAnimes;
     }
 
-    @Cacheable(value = "upcomingReleasesCache", unless = "#result == null")
-    public List<AnimeCard> fetchUpcomingAnimeReleases() {
+    public ResponseAnimeCardAniListDto fetchUpcomingAnimeReleases() {
         final String query = """
                         query {
                           Page(perPage: 5) {
@@ -406,23 +275,10 @@ public class AniListApiClient {
                 
                 """;
 
-        ResponseAnimeCardAniListDto response = executeQuery(query, null, ResponseAnimeCardAniListDto.class);
-
-
-        if (response == null || response.data() == null) {
-            return Collections.emptyList();
-        }
-        List<AnimeCard> trendingAnimes = response.data()
-                .page()
-                .media()
-                .stream()
-                .map(anime -> aniListAnimeMapper.toAnimeCard(anime))
-                .toList();
-        return trendingAnimes;
+        return executeQuery(query, null, ResponseAnimeCardAniListDto.class);
     }
 
-    @Cacheable(value = "seasonTrendCache", unless = "#result == null")
-    public List<AnimeCard> fetchSeasonTrendAnimes() {
+    public ResponseAnimeCardAniListDto fetchSeasonTrendAnimes() {
         MediaSeason actualSeason = MediaSeason.current();
         int actualYear = LocalDate.now().getYear();
         final String query = String.format("""
@@ -447,24 +303,10 @@ public class AniListApiClient {
                 
                 """, actualSeason.toString(), actualYear);
 
-
-        ResponseAnimeCardAniListDto response = executeQuery(query, null, ResponseAnimeCardAniListDto.class);
-
-
-        if (response == null || response.data() == null) {
-            return Collections.emptyList();
-        }
-        List<AnimeCard> trendingAnimes = response.data()
-                .page()
-                .media()
-                .stream()
-                .map(anime -> aniListAnimeMapper.toAnimeCard(anime))
-                .toList();
-        return trendingAnimes;
+        return executeQuery(query, null, ResponseAnimeCardAniListDto.class);
     }
 
-    @Cacheable(value = "mostValoratedCache", unless = "#result == null")
-    public List<AnimeCard> fetchMostValoratedAnimes() {
+    public ResponseAnimeCardAniListDto fetchMostValoratedAnimes() {
         final String query = """
                         query {
                           Page(perPage: 5) {
@@ -487,22 +329,11 @@ public class AniListApiClient {
                 
                 """;
 
-        ResponseAnimeCardAniListDto response = executeQuery(query, null, ResponseAnimeCardAniListDto.class);
-
-        if (response == null || response.data() == null) {
-            return Collections.emptyList();
-        }
-        List<AnimeCard> trendingAnimes = response.data()
-                .page()
-                .media()
-                .stream()
-                .map(anime -> aniListAnimeMapper.toAnimeCard(anime))
-                .toList();
-        return trendingAnimes;
+        return executeQuery(query, null, ResponseAnimeCardAniListDto.class);
     }
 
-
-    public List<Tag> fetchAllTags() {
+    @Cacheable(value = "tagsCache", unless = "#result == null")
+    public ResponseTagsAniListDto fetchAllTags() {
         final String query = """
                         query {
                           MediaTagCollection {
@@ -513,44 +344,25 @@ public class AniListApiClient {
                         }
                 """;
 
-        ResponseTagsAniListDto response = executeQuery(query, null, ResponseTagsAniListDto.class);
-
-        if (response == null || response.data() == null) {
-            return Collections.emptyList();
-        }
-        List<Tag> tags = response.data()
-                .mediaTagCollection()
-                .stream()
-                .map(tag -> aniListAnimeMapper.toTag(tag))
-                .toList();
-        return tags;
+        return executeQuery(query, null, ResponseTagsAniListDto.class);
     }
 
-    public List<Genre> fetchAllGenres() {
+    @Cacheable(value = "genreAnimeCache", unless = "#result == null")
+    public ResponseGenresAniListDto fetchAllGenres() {
         final String query = """
                         query {
                           GenreCollection
                         }
                 """;
 
-        ResponseGenresAniListDto response = executeQuery(query, null, ResponseGenresAniListDto.class);
-
-
-        if (response == null || response.data() == null) {
-            return Collections.emptyList();
-        }
-        List<Genre> genres = response.data()
-                .genreCollection()
-                .stream()
-                .map(genre -> aniListAnimeMapper.toGenre(genre))
-                .toList();
-        return genres;
+        return executeQuery(query, null, ResponseGenresAniListDto.class);
     }
 
-    public List<AnimeCard> fetchAnimesByFilters(int cant, String name, List<String> tags, List<String> genres, int year, String season, String status) {
-        String query = String.format("""
-                             query ($genre_in: [String], $tag_in: [String], $season: MediaSeason, $seasonYear: Int, $status: MediaStatus, $search: String) {
-                               Page(perPage: %d) {
+    @Cacheable(value = "filteredAnimesCache", key = "{#cant, #name, #tags, #genres, #year, #season, #status}", unless = "#result == null")
+    public ResponseAnimeCardAniListDto fetchAnimesByFilters(int cant, String name, List<String> tags, List<String> genres, int year, String season, String status) {
+        String query = """
+                             query ($perPage: Int, $genre_in: [String], $tag_in: [String], $season: MediaSeason, $seasonYear: Int, $status: MediaStatus, $search: String) {
+                               Page(perPage: $perPage) {
                                  media(type: ANIME, genre_in: $genre_in, tag_in: $tag_in, season: $season, seasonYear: $seasonYear, status: $status, search: $search, sort: POPULARITY_DESC) {
                                    id
                                    idMal
@@ -567,9 +379,10 @@ public class AniListApiClient {
                                  }
                                }
                              }
-                """, cant);
+                """;
 
         Map<String, Object> variables = new HashMap<>();
+        variables.put("perPage", cant);
 
         if (name != null) {
             variables.put("search", name);
@@ -595,21 +408,6 @@ public class AniListApiClient {
             variables.put("status", status);
         }
 
-
-        ResponseAnimeCardAniListDto response = executeQuery(query, variables, ResponseAnimeCardAniListDto.class);
-
-        if (response == null || response.data() == null) {
-            return Collections.emptyList();
-        }
-        List<AnimeCard> filteredAnimes = response.data()
-                .page()
-                .media()
-                .stream()
-                .map(anime -> aniListAnimeMapper.toAnimeCard(anime))
-                .toList();
-        return filteredAnimes;
+        return executeQuery(query, variables, ResponseAnimeCardAniListDto.class);
     }
-
-
 }
-

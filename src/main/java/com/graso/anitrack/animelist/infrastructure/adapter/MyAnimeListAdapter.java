@@ -5,39 +5,42 @@ import com.graso.anitrack.animelist.application.out.AnimeListQueryPort;
 import com.graso.anitrack.animelist.domain.AnimeList;
 import com.graso.anitrack.animelist.domain.AnimeStatus;
 import com.graso.anitrack.external.myanimelist.MyAnimeListApiClient;
+import com.graso.anitrack.external.myanimelist.dto.ResponseAnimeListRequest;
+import com.graso.anitrack.external.myanimelist.dto.ResponseAnimeStatusRequest;
+import com.graso.anitrack.external.myanimelist.dto.ResponseAnimeToListRequest;
+import com.graso.anitrack.external.myanimelist.mapper.MyAnimeListAnimeListMapper;
+import com.graso.anitrack.external.myanimelist.mapper.MyAnimeListStatusMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 @Component
 @AllArgsConstructor
 public class MyAnimeListAdapter implements AnimeListQueryPort, AnimeListCommandPort {
-    MyAnimeListApiClient myAnimeListApiClient;
+    private final MyAnimeListApiClient myAnimeListApiClient;
+    private final MyAnimeListAnimeListMapper myAnimeListAnimeListMapper;
+    private final MyAnimeListStatusMapper myAnimeListStatusMapper;
 
     @Override
     public AnimeList findAnimeList(String token, String status) {
-        return myAnimeListApiClient.getAnimeList(token, status);
+        ResponseAnimeListRequest response = myAnimeListApiClient.getAnimeList(token, status);
+        return myAnimeListAnimeListMapper.toAnimeList(response);
     }
 
     @Override
     public AnimeStatus findAnimeListStatus(String token, int id) {
-        return myAnimeListApiClient.getAnimeStatus(token, id);
+        ResponseAnimeStatusRequest response = myAnimeListApiClient.getAnimeStatus(token, id);
+        return myAnimeListStatusMapper.toAnimeStatus(response);
     }
-
 
     @Override
     public AnimeStatus addAnimeToList(String token, int id) {
-        return myAnimeListApiClient.addAnimeToList(token, id);
+        ResponseAnimeToListRequest response = myAnimeListApiClient.addAnimeToList(token, id);
+        return myAnimeListStatusMapper.fromAnimeToListToAnimeStatus(response);
     }
 
     @Override
     public AnimeStatus modifyAnimeToList(String token, int id, String status, int score, int numEpisodes) {
-        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-        body.add("status", status);
-        body.add("score", String.valueOf(score));
-        body.add("num_watched_episodes", String.valueOf(numEpisodes));
-
-        return myAnimeListApiClient.modifyAnimeToList(token, id, body);
+        ResponseAnimeToListRequest response = myAnimeListApiClient.modifyAnimeToList(token, id, status, score, numEpisodes);
+        return myAnimeListStatusMapper.fromAnimeToListToAnimeStatus(response);
     }
 }

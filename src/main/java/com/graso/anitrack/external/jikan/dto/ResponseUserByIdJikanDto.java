@@ -1,6 +1,6 @@
 package com.graso.anitrack.external.jikan.dto;
 
-import com.graso.anitrack.user.domain.UserJikan.External;
+import com.graso.anitrack.user.domain.userjikan.External;
 
 public record ResponseUserByIdJikanDto(Data data) {
     public record Data(

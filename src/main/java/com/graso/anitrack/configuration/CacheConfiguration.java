@@ -19,7 +19,6 @@ public class CacheConfiguration {
     @Bean
     public CacheManager cacheManager() {
 
-
         SimpleCacheManager manager = new SimpleCacheManager();
         List<CaffeineCache> caches = List.of(
 
@@ -34,14 +33,15 @@ public class CacheConfiguration {
                 buildCache("bannerImageCache", 7, TimeUnit.DAYS, 50),
                 buildCache("mostValoratedCache", 7, TimeUnit.DAYS, 500),
                 buildCache("upcomingReleasesCache", 7, TimeUnit.DAYS, 500),
-                buildCache("genreAnimeCache", 7, TimeUnit.DAYS, 1000)
+                buildCache("genreAnimeCache", 7, TimeUnit.DAYS, 1000),
+                buildCache("tagsCache", 7, TimeUnit.DAYS, 100),
+                buildCache("filteredAnimesCache", 1, TimeUnit.HOURS, 500)
 
         );
 
         manager.setCaches(caches);
         return manager;
     }
-
 
     private static CaffeineCache buildCache(String name, long ttl, TimeUnit timeUnit, long size) {
         return new CaffeineCache(name, Caffeine.newBuilder()

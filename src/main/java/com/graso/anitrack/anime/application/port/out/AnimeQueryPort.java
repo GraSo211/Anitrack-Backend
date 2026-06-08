@@ -17,7 +17,7 @@ public interface AnimeQueryPort {
 
     Map<String, String> getBannerImage();
 
-    AnimeTopSeason findTopSeasonAnime();
+    List<AnimeTopSeason> findTopSeasonAnime();
 
 
     List<AnimeReleasing> findAnimesReleasing();
