@@ -5,7 +5,10 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
+import java.net.URI;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -51,8 +54,34 @@ public class MyAnimeListApiClient {
     }
 
     public ResponseAnimeListRequest getAnimeList(String token, String status) {
+        String firstUri = buildAnimeListUri(status);
+        ResponseAnimeListRequest response = fetchAnimeListPage(token, firstUri);
+
+        List<ResponseAnimeListRequest.Data> allData = new ArrayList<>(response.data());
+        String nextUrl = response.paging() != null ? response.paging().next() : null;
+
+        while (nextUrl != null && !nextUrl.isEmpty()) {
+            URI nextUri = URI.create(nextUrl);
+            String nextPathAndQuery = nextUri.getPath() + "?" + nextUri.getQuery();
+            response = fetchAnimeListPage(token, nextPathAndQuery);
+            allData.addAll(response.data());
+            nextUrl = response.paging() != null ? response.paging().next() : null;
+        }
+
+        return new ResponseAnimeListRequest(allData, null);
+    }
+
+    private String buildAnimeListUri(String status) {
+        StringBuilder uri = new StringBuilder("/v2/users/@me/animelist?fields=list_status&limit=1000");
+        if (status != null && !status.isEmpty()) {
+            uri.append("&status=").append(status);
+        }
+        return uri.toString();
+    }
+
+    private ResponseAnimeListRequest fetchAnimeListPage(String token, String uri) {
         return myAnimeListWebClientSecondVersion.get()
-                .uri("/v2/users/@me/animelist?status=" + status + "&fields=list_status&limit=1000")
+                .uri(uri)
                 .headers(httpHeaders -> httpHeaders.setBearerAuth(token))
                 .retrieve()
                 .bodyToMono(ResponseAnimeListRequest.class)

@@ -16,7 +16,7 @@ public class AnimeListController {
     private final AnimeListService animeListService;
 
     @GetMapping("")
-    public ResponseEntity<AnimeList> getAnimeList(@CookieValue("access_token") String token, @RequestParam(required = false, defaultValue = "") String status) {
+    public ResponseEntity<AnimeList> getAnimeList(@CookieValue("access_token") String token, @RequestParam(required = false) String status) {
         AnimeList animeList = animeListService.getAnimeListUseCase(token, status);
         return ResponseEntity.ok(animeList);
     }
