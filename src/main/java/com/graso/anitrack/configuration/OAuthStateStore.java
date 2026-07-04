@@ -9,21 +9,22 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class OAuthStateStore {
 
-    private final Cache<String, Boolean> stateCache = Caffeine.newBuilder()
+    private final Cache<String, StateData> stateCache = Caffeine.newBuilder()
             .expireAfterWrite(10, TimeUnit.MINUTES)
             .maximumSize(1000)
             .build();
 
-    public void store(String state) {
-        stateCache.put(state, true);
+    public record StateData(String randomState, String codeVerifier) {}
+
+    public void store(String encodedState, String randomState, String codeVerifier) {
+        stateCache.put(encodedState, new StateData(randomState, codeVerifier));
     }
 
-    public boolean consume(String state) {
-        Boolean present = stateCache.getIfPresent(state);
-        if (present != null) {
-            stateCache.invalidate(state);
-            return true;
+    public StateData consume(String encodedState) {
+        StateData data = stateCache.getIfPresent(encodedState);
+        if (data != null) {
+            stateCache.invalidate(encodedState);
         }
-        return false;
+        return data;
     }
 }

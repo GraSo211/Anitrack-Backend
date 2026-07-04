@@ -24,7 +24,7 @@ public class MalAuthAdapter implements AuthPort {
         this.myAnimeListApiClient = myAnimeListApiClient;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
-        this.backendUrl = backendUrl;
+        this.backendUrl = backendUrl.replaceAll("/+$", "");
     }
 
     @Override

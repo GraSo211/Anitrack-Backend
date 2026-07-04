@@ -1,7 +1,7 @@
 package com.graso.anitrack.user.infrastructure;
 
+import com.graso.anitrack.configuration.OAuthStateStore;
 import com.graso.anitrack.external.myanimelist.dto.ResponseTokenRequest;
-import com.graso.anitrack.user.application.dto.OAuthAuthorization;
 import com.graso.anitrack.user.application.service.AuthService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.Map;
 
 @Controller
@@ -36,10 +34,10 @@ public class AuthController {
 
     @GetMapping("/mal/url")
     public ResponseEntity<Map<String, String>> getUrl() {
-        OAuthAuthorization auth = authService.generateAuthorizationUrl();
+        String url = authService.generateAuthorizationUrl();
 
         return ResponseEntity.ok(
-                Map.of("url", auth.authorizationUrl())
+                Map.of("url", url)
         );
     }
 
@@ -49,25 +47,14 @@ public class AuthController {
             @RequestParam String state,
             HttpServletResponse response
     ) throws IOException {
-        String decodedState = new String(
-                Base64.getUrlDecoder().decode(state),
-                StandardCharsets.UTF_8
-        );
+        OAuthStateStore.StateData stateData = authService.consumeState(state);
 
-        String[] parts = decodedState.split(":");
-
-        if (parts.length < 2) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid state parameter");
-            return;
-        }
-
-        String codeVerifier = parts[0];
-        String randomState = parts[1];
-
-        if (!authService.validateState(randomState)) {
+        if (stateData == null) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "State mismatch - possible CSRF attack");
             return;
         }
+
+        String codeVerifier = stateData.codeVerifier();
 
         ResponseTokenRequest token =
                 authService.loginWithMyAnimeList(code, codeVerifier);
