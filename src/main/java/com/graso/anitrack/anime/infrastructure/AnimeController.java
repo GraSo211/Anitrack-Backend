@@ -63,20 +63,23 @@ public class AnimeController {
     }
 
     @GetMapping("/upcomingAnimeReleases")
-    public ResponseEntity<List<AnimeCard>> getUpcomingAnimeReleases() {
-        List<AnimeCard> animeCards = animeService.getUpcomingAnimeReleases();
+    public ResponseEntity<List<AnimeCard>> getUpcomingAnimeReleases(
+            @RequestParam(defaultValue = "5") @Min(1) @Max(50) int cant) {
+        List<AnimeCard> animeCards = animeService.getUpcomingAnimeReleases(cant);
         return ResponseEntity.ok(animeCards);
     }
 
     @GetMapping("/seasonTrendAnimes")
-    public ResponseEntity<List<AnimeCard>> getSeasonTrendAnimes() {
-        List<AnimeCard> animeCards = animeService.getSeasonTrendAnimes();
+    public ResponseEntity<List<AnimeCard>> getSeasonTrendAnimes(
+            @RequestParam(defaultValue = "5") @Min(1) @Max(50) int cant) {
+        List<AnimeCard> animeCards = animeService.getSeasonTrendAnimes(cant);
         return ResponseEntity.ok(animeCards);
     }
 
     @GetMapping("/mostValoratedAnimes")
-    public ResponseEntity<List<AnimeCard>> getMostValoratedAnimes() {
-        List<AnimeCard> animeCards = animeService.getMostValoratedAnimes();
+    public ResponseEntity<List<AnimeCard>> getMostValoratedAnimes(
+            @RequestParam(defaultValue = "5") @Min(1) @Max(50) int cant) {
+        List<AnimeCard> animeCards = animeService.getMostValoratedAnimes(cant);
         return ResponseEntity.ok(animeCards);
     }
 

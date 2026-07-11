@@ -252,10 +252,10 @@ public class AniListApiClient {
         return releasingAnimes;
     }
 
-    public ResponseAnimeCardAniListDto fetchUpcomingAnimeReleases() {
-        final String query = """
+    public ResponseAnimeCardAniListDto fetchUpcomingAnimeReleases(int cant) {
+        final String query = String.format("""
                         query {
-                          Page(perPage: 5) {
+                          Page(perPage: %d) {
                             media(type: ANIME, status: NOT_YET_RELEASED, sort: [POPULARITY_DESC,TRENDING_DESC]) {
                               id
                               idMal
@@ -273,17 +273,17 @@ public class AniListApiClient {
                           }
                         }
                 
-                """;
+                """, cant);
 
         return executeQuery(query, null, ResponseAnimeCardAniListDto.class);
     }
 
-    public ResponseAnimeCardAniListDto fetchSeasonTrendAnimes() {
+    public ResponseAnimeCardAniListDto fetchSeasonTrendAnimes(int cant) {
         MediaSeason actualSeason = MediaSeason.current();
         int actualYear = LocalDate.now().getYear();
         final String query = String.format("""
                         query {
-                          Page(perPage: 5) {
+                          Page(perPage: %d) {
                             media(type: ANIME, sort: POPULARITY_DESC, season: %s, seasonYear: %d) {
                               id
                               idMal
@@ -301,15 +301,15 @@ public class AniListApiClient {
                           }
                         }
                 
-                """, actualSeason.toString(), actualYear);
+                """, cant, actualSeason.toString(), actualYear);
 
         return executeQuery(query, null, ResponseAnimeCardAniListDto.class);
     }
 
-    public ResponseAnimeCardAniListDto fetchMostValoratedAnimes() {
-        final String query = """
+    public ResponseAnimeCardAniListDto fetchMostValoratedAnimes(int cant) {
+        final String query = String.format("""
                         query {
-                          Page(perPage: 5) {
+                          Page(perPage: %d) {
                             media(type: ANIME, sort: SCORE_DESC) {
                               id
                               idMal
@@ -327,7 +327,7 @@ public class AniListApiClient {
                           }
                         }
                 
-                """;
+                """, cant);
 
         return executeQuery(query, null, ResponseAnimeCardAniListDto.class);
     }

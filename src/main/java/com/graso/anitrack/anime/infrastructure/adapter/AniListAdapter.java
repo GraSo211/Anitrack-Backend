@@ -76,8 +76,8 @@ public class AniListAdapter implements AnimeQueryPort {
     }
 
     @Override
-    public List<AnimeCard> findUpcomingAnimeReleases() {
-        ResponseAnimeCardAniListDto response = aniListApiClient.fetchUpcomingAnimeReleases();
+    public List<AnimeCard> findUpcomingAnimeReleases(int cant) {
+        ResponseAnimeCardAniListDto response = aniListApiClient.fetchUpcomingAnimeReleases(cant);
 
         if (response == null || response.data() == null) {
             return Collections.emptyList();
@@ -91,8 +91,8 @@ public class AniListAdapter implements AnimeQueryPort {
     }
 
     @Override
-    public List<AnimeCard> findSeasonTrendAnimes() {
-        ResponseAnimeCardAniListDto response = aniListApiClient.fetchSeasonTrendAnimes();
+    public List<AnimeCard> findSeasonTrendAnimes(int cant) {
+        ResponseAnimeCardAniListDto response = aniListApiClient.fetchSeasonTrendAnimes(cant);
 
         if (response == null || response.data() == null) {
             return Collections.emptyList();
@@ -106,8 +106,8 @@ public class AniListAdapter implements AnimeQueryPort {
     }
 
     @Override
-    public List<AnimeCard> findMostValoratedAnimes() {
-        ResponseAnimeCardAniListDto response = aniListApiClient.fetchMostValoratedAnimes();
+    public List<AnimeCard> findMostValoratedAnimes(int cant) {
+        ResponseAnimeCardAniListDto response = aniListApiClient.fetchMostValoratedAnimes(cant);
 
         if (response == null || response.data() == null) {
             return Collections.emptyList();

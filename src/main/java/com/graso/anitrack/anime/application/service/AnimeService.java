@@ -60,16 +60,16 @@ public class AnimeService {
         return animeQueryPort.findAnimesReleasing();
     }
 
-    public List<AnimeCard> getUpcomingAnimeReleases() {
-        return animeQueryPort.findUpcomingAnimeReleases();
+    public List<AnimeCard> getUpcomingAnimeReleases(int cant) {
+        return animeQueryPort.findUpcomingAnimeReleases(cant);
     }
 
-    public List<AnimeCard> getSeasonTrendAnimes() {
-        return animeQueryPort.findSeasonTrendAnimes();
+    public List<AnimeCard> getSeasonTrendAnimes(int cant) {
+        return animeQueryPort.findSeasonTrendAnimes(cant);
     }
 
-    public List<AnimeCard> getMostValoratedAnimes() {
-        return animeQueryPort.findMostValoratedAnimes();
+    public List<AnimeCard> getMostValoratedAnimes(int cant) {
+        return animeQueryPort.findMostValoratedAnimes(cant);
     }
 
     public List<Tag> getTags() {

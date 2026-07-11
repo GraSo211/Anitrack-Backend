@@ -22,11 +22,11 @@ public interface AnimeQueryPort {
 
     List<AnimeReleasing> findAnimesReleasing();
 
-    List<AnimeCard> findUpcomingAnimeReleases();
+    List<AnimeCard> findUpcomingAnimeReleases(int cant);
 
-    List<AnimeCard> findSeasonTrendAnimes();
+    List<AnimeCard> findSeasonTrendAnimes(int cant);
 
-    List<AnimeCard> findMostValoratedAnimes();
+    List<AnimeCard> findMostValoratedAnimes(int cant);
 
 
     List<Genre> findAllGenres();
