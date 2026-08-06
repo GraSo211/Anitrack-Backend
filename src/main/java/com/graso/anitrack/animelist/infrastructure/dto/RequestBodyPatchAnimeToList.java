@@ -1,8 +1,0 @@
-package com.graso.anitrack.animelist.infrastructure.dto;
-
-public record RequestBodyPatchAnimeToList(
-        String status,
-        int score,
-        int numEpisodes
-) {
-}

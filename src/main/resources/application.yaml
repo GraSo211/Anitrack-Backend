@@ -13,3 +13,22 @@ application:
   backend-url: ${BACKEND_URL}
   frontend-url: ${FRONTEND_URL}
   in-production: ${IN_PRODUCTION}
+
+anitrack:
+  anilist:
+    releasing:
+      sleep-ms: 1500
+      max-pages: 100
+      retry-after-429-ms: 60000
+      max-retries-per-page: 3
+  cache:
+    releasing:
+      size: 5000
+      ttl-hours: 1
+      warmup-ms: 1800000
+      warmup-initial-delay-ms: 30000
+
+cloudinary:
+  cloud-name: ${CLOUDINARY_CLOUD_NAME}
+  api-key: ${CLOUDINARY_API_KEY}
+  api-secret: ${CLOUDINARY_API_SECRET}
