@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.util.Map;
@@ -20,6 +21,13 @@ public class GlobalExceptionHandler {
         log.error("WebClient error: {} - {}", e.getStatusCode(), e.getResponseBodyAsString(), e);
         return ResponseEntity.status(e.getStatusCode())
                 .body(Map.of("error", e.getResponseBodyAsString()));
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<Map<String, String>> handleMaxUploadSize(MaxUploadSizeExceededException e) {
+        log.error("Upload size exceeded: {}", e.getMessage(), e);
+        return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
+                .body(Map.of("error", "File size exceeds the maximum allowed (5MB)"));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

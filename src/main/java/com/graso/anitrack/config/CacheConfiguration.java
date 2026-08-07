@@ -41,7 +41,10 @@ public class CacheConfiguration {
                 buildCache("upcomingReleasesCache", 7, TimeUnit.DAYS, 500),
                 buildCache("genreAnimeCache", 7, TimeUnit.DAYS, 1000),
                 buildCache("tagsCache", 7, TimeUnit.DAYS, 100),
-                buildCache("filteredAnimesCache", 1, TimeUnit.HOURS, 500)
+                buildCache("filteredAnimesCache", 1, TimeUnit.HOURS, 500),
+
+                // 1 minuto
+                buildCache("heroImagesCache", 1, TimeUnit.MINUTES, 50)
 
         );
 

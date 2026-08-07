@@ -1,9 +1,12 @@
 package com.graso.anitrack.administrator.controller;
 
+import com.graso.anitrack.administrator.controller.dto.HeroImageResponse;
 import com.graso.anitrack.administrator.controller.dto.ImagesHeroResponse;
 import com.graso.anitrack.administrator.service.AdministratorService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,6 +32,20 @@ public class AdministratorController {
         ImagesHeroResponse response = new ImagesHeroResponse(uploadedUrls);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/hero-images")
+    public ResponseEntity<List<HeroImageResponse>> getHeroImages() {
+        List<HeroImageResponse> heroImages = administratorService.getHeroImages();
+
+        return new ResponseEntity<>(heroImages, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/hero-images")
+    public ResponseEntity<Void> deleteHeroImage(@RequestParam("publicId") String publicId) {
+        administratorService.deleteHeroImage(publicId);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     ;
