@@ -2,9 +2,11 @@ package com.graso.anitrack.administrator.controller;
 
 import com.graso.anitrack.administrator.controller.dto.HeroImageResponse;
 import com.graso.anitrack.administrator.controller.dto.ImagesHeroResponse;
+import com.graso.anitrack.administrator.service.AdminUserService;
 import com.graso.anitrack.administrator.service.AdministratorService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,14 +22,18 @@ import java.util.List;
 @RequestMapping("/api/v1/admin")
 public class AdministratorController {
     AdministratorService administratorService;
+    AdminUserService adminUserService;
 
-    public AdministratorController(AdministratorService administratorService) {
+    public AdministratorController(AdministratorService administratorService, AdminUserService adminUserService) {
         this.administratorService = administratorService;
+        this.adminUserService = adminUserService;
 
     }
 
     @PostMapping("/hero-images")
-    public ResponseEntity<ImagesHeroResponse> postHeroImages(@RequestParam("images") List<MultipartFile> multipartFileList) {
+    public ResponseEntity<ImagesHeroResponse> postHeroImages(@CookieValue("access_token") String token,
+                                                             @RequestParam("images") List<MultipartFile> multipartFileList) {
+        adminUserService.requireAdmin(token);
         List<String> uploadedUrls = administratorService.uploadHeroImages(multipartFileList);
         ImagesHeroResponse response = new ImagesHeroResponse(uploadedUrls);
 
@@ -42,7 +48,9 @@ public class AdministratorController {
     }
 
     @DeleteMapping("/hero-images")
-    public ResponseEntity<Void> deleteHeroImage(@RequestParam("publicId") String publicId) {
+    public ResponseEntity<Void> deleteHeroImage(@CookieValue("access_token") String token,
+                                                @RequestParam("publicId") String publicId) {
+        adminUserService.requireAdmin(token);
         administratorService.deleteHeroImage(publicId);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

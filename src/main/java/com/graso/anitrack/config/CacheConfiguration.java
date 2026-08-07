@@ -44,7 +44,10 @@ public class CacheConfiguration {
                 buildCache("filteredAnimesCache", 1, TimeUnit.HOURS, 500),
 
                 // 1 minuto
-                buildCache("heroImagesCache", 1, TimeUnit.MINUTES, 50)
+                buildCache("heroImagesCache", 1, TimeUnit.MINUTES, 50),
+
+                // 5 minutos
+                buildCache("resolvedUserCache", 5, TimeUnit.MINUTES, 500)
 
         );
 

@@ -30,6 +30,13 @@ public class GlobalExceptionHandler {
                 .body(Map.of("error", "File size exceeds the maximum allowed (5MB)"));
     }
 
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<Map<String, String>> handleForbidden(ForbiddenException e) {
+        log.error("Forbidden: {}", e.getMessage(), e);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(Map.of("error", e.getMessage()));
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, String>> handleIllegalArgument(IllegalArgumentException e) {
         log.error("Illegal argument: {}", e.getMessage(), e);

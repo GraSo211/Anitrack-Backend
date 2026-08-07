@@ -8,6 +8,14 @@ spring:
     multipart:
       max-file-size: 5MB
       max-request-size: 50MB
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/anitrack-db}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
 
 mal:
   client-id: ${MAL_CLIENT_ID}
@@ -19,6 +27,8 @@ application:
   in-production: ${IN_PRODUCTION}
 
 anitrack:
+  admin:
+    root-username: ${ADMIN_ROOT_USERNAME:graso}
   anilist:
     releasing:
       sleep-ms: 1500

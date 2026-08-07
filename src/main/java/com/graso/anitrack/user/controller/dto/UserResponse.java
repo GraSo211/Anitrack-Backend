@@ -13,9 +13,10 @@ public record UserResponse(
         String location,
         String joinedAt,
         String timeZone,
-        MalStatistics statistics
+        MalStatistics statistics,
+        boolean admin
 ) {
-    public static UserResponse from(User user) {
+    public static UserResponse from(User user, boolean admin) {
         return new UserResponse(
                 user.getId(),
                 user.getName(),
@@ -26,7 +27,8 @@ public record UserResponse(
                 user.getLocation(),
                 user.getJoinedAt(),
                 user.getTimeZone(),
-                user.getStatistics()
+                user.getStatistics(),
+                admin
         );
     }
 }
