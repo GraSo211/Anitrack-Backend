@@ -43,14 +43,6 @@ public class WebClientConfiguration {
     }
 
     @Bean
-    public WebClient jikanWebClient() {
-        return WebClient.builder()
-                .baseUrl("https://api.jikan.moe/v4")
-                .clientConnector(new ReactorClientHttpConnector(createHttpClient()))
-                .build();
-    }
-
-    @Bean
     public WebClient myAnimeListWebClientSecondVersion() {
         return WebClient.builder()
                 .baseUrl("https://api.myanimelist.net/")

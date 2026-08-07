@@ -12,6 +12,7 @@ public class MyAnimeListUserMapper {
         return User.builder()
                 .id(response.id())
                 .name(response.name())
+                .url("https://myanimelist.net/profile/" + response.name())
                 .picture(response.picture())
                 .gender(response.gender())
                 .birthday(response.birthday())

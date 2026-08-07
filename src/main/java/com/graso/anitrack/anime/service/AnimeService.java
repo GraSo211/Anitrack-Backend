@@ -1,7 +1,6 @@
 package com.graso.anitrack.anime.service;
 
 import com.graso.anitrack.anime.client.anilist.AniListClient;
-import com.graso.anitrack.anime.client.jikan.JikanAnimeClient;
 import com.graso.anitrack.anime.model.*;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
@@ -15,7 +14,6 @@ import java.util.Map;
 @AllArgsConstructor
 public class AnimeService {
     private final AniListClient aniListClient;
-    private final JikanAnimeClient jikanAnimeClient;
 
     public Anime getById(int id) {
         Anime anime = aniListClient.findById(id);
@@ -46,10 +44,6 @@ public class AnimeService {
                                 Comparator.nullsLast(Comparator.reverseOrder())))
                 .findFirst()
                 .orElse(null);
-    }
-
-    public EpisodePage getAllEpisodesOfAnime(int animeId) {
-        return jikanAnimeClient.findAllEpisodesOfAnime(animeId);
     }
 
     public List<AnimeReleasing> getReleasingAnimes() {

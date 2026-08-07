@@ -40,11 +40,6 @@ public class AnimeController {
         return ResponseEntity.ok(AnimeTopSeasonResponse.from(animeService.getTopSeasonAnime()));
     }
 
-    @GetMapping("/{animeId}/episodes")
-    public ResponseEntity<EpisodePageResponse> getAllEpisodesOfAnime(@PathVariable int animeId) {
-        return ResponseEntity.ok(EpisodePageResponse.from(animeService.getAllEpisodesOfAnime(animeId)));
-    }
-
     @GetMapping("/releasingAnimes")
     public ResponseEntity<List<AnimeReleasingResponse>> getReleasingAnimes() {
         List<AnimeReleasingResponse> dtos = animeService.getReleasingAnimes()

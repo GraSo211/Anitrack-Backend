@@ -6,6 +6,7 @@ import com.graso.anitrack.user.model.User;
 public record UserResponse(
         Integer id,
         String name,
+        String url,
         String picture,
         String gender,
         String birthday,
@@ -18,6 +19,7 @@ public record UserResponse(
         return new UserResponse(
                 user.getId(),
                 user.getName(),
+                user.getUrl(),
                 user.getPicture(),
                 user.getGender(),
                 user.getBirthday(),

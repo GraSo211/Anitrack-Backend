@@ -9,6 +9,7 @@ public class User {
 
     private Integer id;
     private String name;
+    private String url;
     private String picture;
     private String gender;
     private String birthday;
