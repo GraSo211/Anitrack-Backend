@@ -10,6 +10,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -101,5 +102,26 @@ public class AuthController {
 
         response.setStatus(HttpServletResponse.SC_FOUND);
         response.setHeader("Location", frontendUrl + "/perfil");
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout() {
+        ResponseCookie.ResponseCookieBuilder access =
+                ResponseCookie.from("access_token", "").httpOnly(true).path("/").maxAge(0);
+        ResponseCookie.ResponseCookieBuilder refresh =
+                ResponseCookie.from("refresh_token", "").httpOnly(true).path("/").maxAge(0);
+
+        if (inProduction) {
+            access.secure(true).sameSite("None").domain(".anitrack.online");
+            refresh.secure(true).sameSite("None").domain(".anitrack.online");
+        } else {
+            access.secure(false).sameSite("Lax");
+            refresh.secure(false).sameSite("Lax");
+        }
+
+        return ResponseEntity.noContent()
+                .header(HttpHeaders.SET_COOKIE, access.build().toString())
+                .header(HttpHeaders.SET_COOKIE, refresh.build().toString())
+                .build();
     }
 }

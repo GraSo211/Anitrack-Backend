@@ -6,6 +6,7 @@ import com.graso.anitrack.user.model.User;
 import com.graso.anitrack.user.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +20,11 @@ public class UserController {
     private final AdminUserService adminUserService;
 
     @GetMapping("/me")
-    public ResponseEntity<UserResponse> getMyUser(@CookieValue("access_token") String token) {
+    public ResponseEntity<UserResponse> getMyUser(
+            @CookieValue(value = "access_token", required = false) String token) {
+        if (token == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
         User user = userService.getMyUser(token);
         boolean admin = adminUserService.isAdmin(user.getName());
 

@@ -27,6 +27,15 @@ public class AnimeService {
         return anime;
     }
 
+    public List<Anime> getByMalIds(List<Integer> ids) {
+        return aniListClient.findByMalIds(ids).stream()
+                .map(anime -> {
+                    anime.keepOnlyAnimeRelations();
+                    return anime;
+                })
+                .toList();
+    }
+
     public Map<String, String> getBanner() {
         return aniListClient.fetchBannerImage();
     }

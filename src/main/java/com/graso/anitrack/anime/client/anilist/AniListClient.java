@@ -46,83 +46,97 @@ public class AniListClient {
                 .block(Duration.ofSeconds(10));
     }
 
+    private static final String ANIME_MEDIA_FIELDS = """
+            id
+            idMal
+            title {
+              romaji
+              english
+            }
+            status
+            description(asHtml: true)
+            startDate {
+              year
+              month
+              day
+            }
+            endDate {
+              year
+              month
+              day
+            }
+            season
+            seasonYear
+            episodes
+            duration
+            countryOfOrigin
+            source
+            trailer {
+              id
+              site
+              thumbnail
+            }
+            coverImage {
+              extraLarge
+              large
+              medium
+              color
+            }
+            bannerImage
+            genres
+            synonyms
+            averageScore
+            popularity
+            relations {
+              edges {
+                relationType
+                node {
+                  id
+                  type
+                  title {
+                    romaji
+                  }
+                  coverImage {
+                    extraLarge
+                    large
+                    medium
+                    color
+                  }
+                }
+              }
+            }
+            studios {
+              edges {
+                isMain
+                node {
+                  id
+                  name
+                }
+              }
+            }
+            isAdult
+            nextAiringEpisode {
+              id
+              airingAt
+              timeUntilAiring
+              episode
+              mediaId
+            }
+            """;
+
     private static final String FETCH_ANIME_BY_ID_QUERY = """
             query($id: Int, $idMal: Int) {
               Media(id: $id, idMal: $idMal, type: ANIME) {
-                id
-                idMal
-                title {
-                  romaji
-                  english
-                }
-                status
-                description(asHtml: true)
-                startDate {
-                  year
-                  month
-                  day
-                }
-                endDate {
-                  year
-                  month
-                  day
-                }
-                season
-                seasonYear
-                episodes
-                duration
-                countryOfOrigin
-                source
-                trailer {
-                  id
-                  site
-                  thumbnail
-                }
-                coverImage {
-                  extraLarge
-                  large
-                  medium
-                  color
-                }
-                bannerImage
-                genres
-                synonyms
-                averageScore
-                popularity
-                relations {
-                  edges {
-                    relationType
-                    node {
-                      id
-                      type
-                      title {
-                        romaji
-                      }
-                      coverImage {
-                        extraLarge
-                        large
-                        medium
-                        color
-                      }
-                    }
-                  }
-                }
-                studios {
-                  edges {
-                    isMain
-                    node {
-                      id
-                      name
-                    }
-                  }
-                }
-                isAdult
-                nextAiringEpisode {
-                  id
-                  airingAt
-                  timeUntilAiring
-                  episode
-                  mediaId
+            """ + ANIME_MEDIA_FIELDS + """
+              }
+            }
+            """;
+
+    private static final String FETCH_ANIMES_BY_MAL_IDS_QUERY = """
+            query($idMal_in: [Int]) {
+              Page(page: 1, perPage: 50) {
+                media(idMal_in: $idMal_in, type: ANIME) {
+            """ + ANIME_MEDIA_FIELDS + """
                 }
               }
             }
@@ -136,6 +150,22 @@ public class AniListClient {
     public Anime findByMalId(int id) {
         ResponseFetchByIdAniListDto response = executeQuery(FETCH_ANIME_BY_ID_QUERY, Map.of("idMal", id), ResponseFetchByIdAniListDto.class);
         return aniListAnimeMapper.toDomain(response);
+    }
+
+    public List<Anime> findByMalIds(List<Integer> ids) {
+        if (ids == null || ids.isEmpty()) return List.of();
+        ResponseBatchAniListDto response = executeQuery(
+                FETCH_ANIMES_BY_MAL_IDS_QUERY,
+                Map.of("idMal_in", ids),
+                ResponseBatchAniListDto.class
+        );
+        if (response == null || response.data() == null || response.data().page() == null
+                || response.data().page().media() == null) {
+            return List.of();
+        }
+        return response.data().page().media().stream()
+                .map(aniListAnimeMapper::toDomain)
+                .toList();
     }
 
     @Cacheable(value = "bannerImageCache", unless = "#result == null")

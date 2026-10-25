@@ -12,8 +12,10 @@ import java.util.List;
 public class AniListAnimeMapper {
 
     public Anime toDomain(ResponseFetchByIdAniListDto response) {
+        return toDomain(response.data().media());
+    }
 
-        ResponseFetchByIdAniListDto.Data.Media dto = response.data().media();
+    public Anime toDomain(ResponseFetchByIdAniListDto.Data.Media dto) {
         String cleanDescription = Jsoup.clean(
                 dto.description(),
                 Safelist.basic()

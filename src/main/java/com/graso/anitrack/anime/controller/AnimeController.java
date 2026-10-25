@@ -30,14 +30,36 @@ public class AnimeController {
         return ResponseEntity.ok(AnimeResponse.from(animeService.getByMalId(id)));
     }
 
+    @GetMapping("/batch")
+    public ResponseEntity<List<AnimeResponse>> getAnimesByMalIds(
+            @RequestParam(required = false) List<Integer> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return ResponseEntity.ok(List.of());
+        }
+        if (ids.size() > 50) {
+            throw new IllegalArgumentException("Máximo 50 ids por request");
+        }
+        return ResponseEntity.ok(
+                animeService.getByMalIds(ids).stream().map(AnimeResponse::from).toList()
+        );
+    }
+
     @GetMapping("/bannerImageAnimeOfSeason")
     public ResponseEntity<Map<String, String>> getBannerImageAnimeOfSeason() {
-        return ResponseEntity.ok(animeService.getBanner());
+        Map<String, String> banner = animeService.getBanner();
+        if (banner == null) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(banner);
     }
 
     @GetMapping("/topSeasonAnime")
     public ResponseEntity<AnimeTopSeasonResponse> getAnimeTopSeason() {
-        return ResponseEntity.ok(AnimeTopSeasonResponse.from(animeService.getTopSeasonAnime()));
+        AnimeTopSeasonResponse body = AnimeTopSeasonResponse.from(animeService.getTopSeasonAnime());
+        if (body == null) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(body);
     }
 
     @GetMapping("/releasingAnimes")

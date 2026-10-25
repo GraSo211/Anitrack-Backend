@@ -45,8 +45,8 @@ public class MyAnimeListAnimeListMapper {
         if (picture == null) return null;
 
         return new Picture(
-                picture.large(),
-                picture.medium()
+                picture.medium(),
+                picture.large()
         );
     }
 
