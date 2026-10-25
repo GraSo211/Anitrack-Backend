@@ -45,7 +45,7 @@ public class MyAnimeListAnimeListClient {
     }
 
     private String buildAnimeListUri(String status) {
-        StringBuilder uri = new StringBuilder("/v2/users/@me/animelist?fields=list_status&limit=1000");
+        StringBuilder uri = new StringBuilder("/v2/users/@me/animelist?fields=list_status&limit=1000&nsfw=true");
         if (status != null && !status.isEmpty()) {
             uri.append("&status=").append(status);
         }

@@ -47,6 +47,7 @@ public class WebClientConfiguration {
         return WebClient.builder()
                 .baseUrl("https://api.myanimelist.net/")
                 .clientConnector(new ReactorClientHttpConnector(createHttpClient()))
+                .codecs(codecs -> codecs.defaultCodecs().maxInMemorySize(4 * 1024 * 1024))
                 .build();
     }
 }
