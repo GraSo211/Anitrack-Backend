@@ -1,4 +1,4 @@
 package com.graso.anitrack.anime.domain.model;
 
-public record MediaRelation(int relatedMediaId, TypeMediaRelation relationType ) {
+public record MediaRelation(int relatedMediaId, TypeMediaRelation relationType, String relatedTitle, String relatedImage ) {
 }

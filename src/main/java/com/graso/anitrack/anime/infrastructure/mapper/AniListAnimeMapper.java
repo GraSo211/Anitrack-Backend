@@ -79,7 +79,7 @@ public class AniListAnimeMapper {
 
     private FuzzyDate mapFuzzyDate(ResponseAniListDto.Data.StartDate date) {
         if (date == null) return null;
-        if (date.year() == null && date.month() == null && date.day() == null) {
+        if (date.year() == null || date.month() == null || date.day() == null) {
             return null;
         }
         return new FuzzyDate(date.year(), date.month(), date.day());
@@ -87,7 +87,7 @@ public class AniListAnimeMapper {
 
     private FuzzyDate mapFuzzyDate(ResponseAniListDto.Data.EndDate date) {
         if (date == null) return null;
-        if (date.year() == null && date.month() == null && date.day() == null) {
+        if (date.year() == null || date.month() == null || date.day() == null) {
             return null;
         }
         return new FuzzyDate(date.year(), date.month(), date.day());
@@ -132,7 +132,9 @@ public class AniListAnimeMapper {
                 relations.edges().stream()
                         .map(edge -> new MediaRelation(
                                 edge.node().id().intValue(),
-                                TypeMediaRelation.valueOf(edge.relationType())
+                                TypeMediaRelation.valueOf(edge.relationType()),
+                                edge.node().title().romaji(),
+                                edge.node().coverImage().extraLarge()
                         ))
                         .toList()
         );

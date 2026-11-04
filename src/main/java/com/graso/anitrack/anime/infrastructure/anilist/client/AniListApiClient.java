@@ -69,6 +69,16 @@ public class AniListApiClient {
                          relationType
                          node {
                            id
+                           type
+                           title{
+                                romaji
+                           }
+                           coverImage{
+                                extraLarge
+                                large
+                                medium
+                                color
+                           }
                          }
                        }
                      }
