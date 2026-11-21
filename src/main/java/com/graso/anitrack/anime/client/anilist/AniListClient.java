@@ -280,7 +280,7 @@ public class AniListClient {
                               currentPage
                               lastPage
                             }
-                            media(type: ANIME, status: RELEASING, isAdult: false) {
+                            media(type: ANIME, status: RELEASING, isAdult: false, tag_not_in: ["Kids"]) {
                               id
                               idMal
                               title {
