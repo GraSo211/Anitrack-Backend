@@ -468,6 +468,51 @@ public class AniListClient {
                                 medium
                                 color
                               }
+                              format
+                              averageScore
+                              genres
+                              description(asHtml: true)
+                              bannerImage
+                            }
+                          }
+                        }
+                
+                """, cant);
+        ResponseAnimeCardAniListDto response = executeQuery(query, null, ResponseAnimeCardAniListDto.class);
+
+        if (response == null || response.data() == null) {
+            return Collections.emptyList();
+        }
+        return response.data()
+                .page()
+                .media()
+                .stream()
+                .map(aniListAnimeMapper::toAnimeCard)
+                .toList();
+    }
+
+    public List<AnimeCard> findMostPopularAnimes(int cant) {
+        final String query = String.format("""
+                        query {
+                          Page(perPage: %d) {
+                            media(type: ANIME, sort: POPULARITY_DESC) {
+                              id
+                              idMal
+                              title {
+                                romaji
+                                english
+                              }
+                              coverImage {
+                                extraLarge
+                                large
+                                medium
+                                color
+                              }
+                              format
+                              averageScore
+                              genres
+                              description(asHtml: true)
+                              bannerImage
                             }
                           }
                         }

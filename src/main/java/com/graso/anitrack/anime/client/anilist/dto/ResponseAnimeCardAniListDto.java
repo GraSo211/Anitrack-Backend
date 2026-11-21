@@ -15,7 +15,12 @@ public record ResponseAnimeCardAniListDto(Data data) {
                     int id,
                     Integer idMal,
                     MediaTitle title,
-                    MediaCoverImage coverImage
+                    MediaCoverImage coverImage,
+                    String format,
+                    Integer averageScore,
+                    List<String> genres,
+                    String description,
+                    String bannerImage
             ) {
             }
 

@@ -86,7 +86,12 @@ public class AniListAnimeMapper {
                 response.id(),
                 response.idMal(),
                 response.title(),
-                response.coverImage()
+                response.coverImage(),
+                response.format(),
+                response.averageScore(),
+                response.genres(),
+                response.description() != null ? Jsoup.clean(response.description(), Safelist.basic()) : null,
+                response.bannerImage()
         );
     }
 

@@ -101,6 +101,16 @@ public class AnimeController {
         return ResponseEntity.ok(dtos);
     }
 
+    @GetMapping("/mostPopularAnimes")
+    public ResponseEntity<List<AnimeCardResponse>> getMostPopularAnimes(
+            @RequestParam(defaultValue = "5") @Min(1) @Max(50) int cant) {
+        List<AnimeCardResponse> dtos = animeService.getMostPopularAnimes(cant)
+                .stream()
+                .map(AnimeCardResponse::from)
+                .toList();
+        return ResponseEntity.ok(dtos);
+    }
+
     @GetMapping("/allTags")
     public ResponseEntity<List<TagResponse>> getAllTags() {
         List<TagResponse> dtos = animeService.getTags()

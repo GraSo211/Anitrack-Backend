@@ -71,6 +71,10 @@ public class AnimeService {
         return aniListClient.findMostValoratedAnimes(cant);
     }
 
+    public List<AnimeCard> getMostPopularAnimes(int cant) {
+        return aniListClient.findMostPopularAnimes(cant);
+    }
+
     public List<Tag> getTags() {
         return aniListClient.findAllTags();
     }
