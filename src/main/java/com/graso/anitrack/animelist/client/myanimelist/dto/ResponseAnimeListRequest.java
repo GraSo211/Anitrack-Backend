@@ -1,5 +1,6 @@
 package com.graso.anitrack.animelist.client.myanimelist.dto;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
@@ -30,7 +31,7 @@ public record ResponseAnimeListRequest(
         public record ListStatus(
                 String status,
                 Integer score,
-                @JsonProperty("num_watched_episodes")
+                @JsonAlias({"num_episodes_watched", "num_watched_episodes"})
                 Integer numWatchedEPisodes,
                 @JsonProperty("is_rewatching")
                 boolean isRewatching

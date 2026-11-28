@@ -23,7 +23,7 @@ public class AnimeListService {
         return myAnimeListAnimeListClient.addAnimeToList(token, id);
     }
 
-    public AnimeStatus modifyAnimeToList(String token, int id, String status, int score, int numEpisodes) {
+    public AnimeStatus modifyAnimeToList(String token, int id, String status, int score, Integer numEpisodes) {
         return myAnimeListAnimeListClient.modifyAnimeToList(token, id, status, score, numEpisodes);
     }
 }

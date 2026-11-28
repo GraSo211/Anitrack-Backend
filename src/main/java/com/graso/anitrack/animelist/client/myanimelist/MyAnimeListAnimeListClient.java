@@ -7,6 +7,8 @@ import com.graso.anitrack.animelist.client.myanimelist.mapper.MyAnimeListAnimeLi
 import com.graso.anitrack.animelist.client.myanimelist.mapper.MyAnimeListStatusMapper;
 import com.graso.anitrack.animelist.model.AnimeList;
 import com.graso.anitrack.animelist.model.AnimeStatus;
+import com.graso.anitrack.importer.client.dto.ResponseAnimeDetailsRequest;
+import com.graso.anitrack.importer.client.dto.ResponseAnimeSearchRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -81,11 +83,17 @@ public class MyAnimeListAnimeListClient {
         return myAnimeListStatusMapper.fromAnimeToListToAnimeStatus(response);
     }
 
-    public AnimeStatus modifyAnimeToList(String token, int id, String status, int score, int numEpisodes) {
+    public AnimeStatus modifyAnimeToList(String token, int id, String status, int score, Integer numEpisodes) {
+        return patchListStatus(token, id, status, score, numEpisodes);
+    }
+
+    public AnimeStatus patchListStatus(String token, int id, String status, int score, Integer numEpisodes) {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("status", status);
         body.add("score", String.valueOf(score));
-        body.add("num_watched_episodes", String.valueOf(numEpisodes));
+        if (numEpisodes != null) {
+            body.add("num_watched_episodes", String.valueOf(numEpisodes));
+        }
 
         ResponseAnimeToListRequest response = myAnimeListWebClientSecondVersion.patch()
                 .uri(String.format("/v2/anime/%d/my_list_status", id))
@@ -95,5 +103,30 @@ public class MyAnimeListAnimeListClient {
                 .bodyToMono(ResponseAnimeToListRequest.class)
                 .block(Duration.ofSeconds(10));
         return myAnimeListStatusMapper.fromAnimeToListToAnimeStatus(response);
+    }
+
+    public ResponseAnimeDetailsRequest getAnimeDetails(String token, int id) {
+        return myAnimeListWebClientSecondVersion.get()
+                .uri(String.format(
+                        "/v2/anime/%d?fields=id,title,alternative_titles,num_episodes,media_type,start_date,main_picture,related_anime",
+                        id))
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(token))
+                .retrieve()
+                .bodyToMono(ResponseAnimeDetailsRequest.class)
+                .block(Duration.ofSeconds(10));
+    }
+
+    public ResponseAnimeSearchRequest searchAnime(String token, String query) {
+        return myAnimeListWebClientSecondVersion.get()
+                .uri(uriBuilder -> uriBuilder.path("/v2/anime")
+                        .queryParam("q", query)
+                        .queryParam("limit", 10)
+                        .queryParam("nsfw", true)
+                        .queryParam("fields", "id,title,alternative_titles,num_episodes,media_type,start_date,main_picture")
+                        .build())
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(token))
+                .retrieve()
+                .bodyToMono(ResponseAnimeSearchRequest.class)
+                .block(Duration.ofSeconds(10));
     }
 }
