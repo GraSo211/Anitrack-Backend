@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.io.InputStream;
@@ -224,11 +225,13 @@ public class ImportService {
             row.seasons = toSeasonStates(mapped.seasons());
         } catch (TokenExpiredException e) {
             throw e;
+        } catch (MalThrottledException e) {
+            throw e;
         } catch (RuntimeException e) {
-            log.warn("Import job {} row {} ({}) no se pudo resolver: {}",
+            log.warn("Import job {} row {} ({}) no se pudo cargar: {}",
                     job.getJobId(), source.lineNumber(), source.title(), e.getMessage());
             row.status = RowStatus.INVALID;
-            row.message = "No se pudo resolver: " + messageOf(e);
+            row.message = "No se pudo cargar: " + messageOf(e);
             row.seasons = new ArrayList<>();
         }
     }
@@ -368,9 +371,11 @@ public class ImportService {
             row.seasons = toSeasonStates(mapped.seasons());
         } catch (TokenExpiredException e) {
             throw e;
+        } catch (MalThrottledException e) {
+            throw e;
         } catch (RuntimeException e) {
             row.status = RowStatus.INVALID;
-            row.message = "No se pudo resolver: " + messageOf(e);
+            row.message = "No se pudo cargar: " + messageOf(e);
             row.seasons = new ArrayList<>();
         }
     }
@@ -520,7 +525,19 @@ public class ImportService {
 
     private static String messageOf(Throwable e) {
         if (e instanceof WebClientResponseException web) {
-            return "MAL respondió " + web.getStatusCode().value();
+            return switch (web.getStatusCode().value()) {
+                case 401 -> "MAL rechazó el token (401): volvé a iniciar sesión";
+                case 403 -> "MAL bloqueó la solicitud por rate limit o permisos (403)";
+                case 404 -> "MAL no encontró ese anime (404)";
+                case 504 -> "MAL no respondió a tiempo (504)";
+                default -> "MAL respondió " + web.getStatusCode().value();
+            };
+        }
+        if (e instanceof WebClientRequestException) {
+            return "no se pudo conectar con MAL";
+        }
+        if (e instanceof MalThrottledException) {
+            return "MAL siguió limitando las solicitudes";
         }
         return e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage();
     }

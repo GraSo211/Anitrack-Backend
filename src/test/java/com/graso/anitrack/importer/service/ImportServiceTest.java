@@ -119,6 +119,21 @@ class ImportServiceTest {
     }
 
     @Test
+    void rowThatFailsToLoadIsReportedWithAReason() {
+        when(client.getAnimeList("tok", null)).thenReturn(new AnimeList(List.of()));
+        when(client.getAnimeDetails("tok", 999)).thenThrow(
+                WebClientResponseException.create(404, "Not Found", HttpHeaders.EMPTY, new byte[0], null));
+
+        String jobId = service.createJob(csv("nombre;mal_id;calificacion\nNo existe;999;8\n"), "tok");
+        ImportJob job = service.get(jobId);
+
+        assertThat(job.previewRows()).singleElement().satisfies(row -> {
+            assertThat(row.status()).isEqualTo(RowStatus.INVALID);
+            assertThat(row.message()).isEqualTo("No se pudo cargar: MAL no encontró ese anime (404)");
+        });
+    }
+
+    @Test
     void expiredTokenFailsTheJobWithTheExactMessage() {
         when(client.getAnimeList("expired", null)).thenThrow(
                 WebClientResponseException.create(401, "Unauthorized", HttpHeaders.EMPTY, new byte[0], null));
