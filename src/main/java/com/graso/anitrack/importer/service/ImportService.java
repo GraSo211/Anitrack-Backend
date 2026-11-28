@@ -217,7 +217,7 @@ public class ImportService {
             }
 
             List<ImportSeason> chain = chainResolver.resolve(base, id -> detail(job, id));
-            ScoreMapper.Result mapped = scoreMapper.map(source.scores(), chain, existing);
+            ScoreMapper.Result mapped = scoreMapper.map(source.scores(), chain, existing, base.id());
             row.status = RowStatus.READY;
             row.candidates = candidates;
             row.message = joinMessages(note, mapped.warning());
@@ -292,10 +292,11 @@ public class ImportService {
 
     private void patch(ImportJob job, ImportJob.RowState row, ImportJob.SeasonState season) {
         Integer episodes = season.episodes == null || season.episodes == 0 ? null : season.episodes;
+        Integer score = season.score == 0 ? null : season.score;
         season.sent = true;
         try {
             call(job, "PATCH anime " + season.malId, () -> client.patchListStatus(
-                    job.getToken(), season.malId, MAL_STATUS_COMPLETED, season.score, episodes));
+                    job.getToken(), season.malId, MAL_STATUS_COMPLETED, score, episodes));
             season.error = null;
         } catch (TokenExpiredException e) {
             season.error = TOKEN_EXPIRED;
@@ -360,7 +361,7 @@ public class ImportService {
         try {
             ImportAnimeDetail base = detail(job, malId);
             List<ImportSeason> chain = chainResolver.resolve(base, id -> detail(job, id));
-            ScoreMapper.Result mapped = scoreMapper.map(row.source.scores(), chain, job.existing());
+            ScoreMapper.Result mapped = scoreMapper.map(row.source.scores(), chain, job.existing(), base.id());
             row.status = RowStatus.READY;
             row.candidates = List.of(mapper.toCandidate(base));
             row.message = mapped.warning();

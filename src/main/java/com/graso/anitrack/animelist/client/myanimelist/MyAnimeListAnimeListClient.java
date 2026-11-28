@@ -87,10 +87,12 @@ public class MyAnimeListAnimeListClient {
         return patchListStatus(token, id, status, score, numEpisodes);
     }
 
-    public AnimeStatus patchListStatus(String token, int id, String status, int score, Integer numEpisodes) {
+    public AnimeStatus patchListStatus(String token, int id, String status, Integer score, Integer numEpisodes) {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("status", status);
-        body.add("score", String.valueOf(score));
+        if (score != null) {
+            body.add("score", String.valueOf(score));
+        }
         if (numEpisodes != null) {
             body.add("num_watched_episodes", String.valueOf(numEpisodes));
         }

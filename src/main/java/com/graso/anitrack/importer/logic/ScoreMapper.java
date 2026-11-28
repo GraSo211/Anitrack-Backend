@@ -14,27 +14,30 @@ public class ScoreMapper {
     public record Result(List<SeasonPreview> seasons, String warning) {
     }
 
-    public Result map(List<Integer> scores, List<ImportSeason> chain, Map<Integer, ExistingStatus> existing) {
+    public Result map(
+            List<Integer> scores,
+            List<ImportSeason> chain,
+            Map<Integer, ExistingStatus> existing,
+            Integer baseId) {
         List<SeasonPreview> seasons = new ArrayList<>();
+        if (chain.isEmpty()) {
+            return new Result(List.of(), null);
+        }
+        if (scores.isEmpty()) {
+            ImportSeason base = chain.stream()
+                    .filter(season -> baseId != null && season.malId() == baseId)
+                    .findFirst()
+                    .orElse(chain.getFirst());
+            seasons.add(toPreview(base, 0, existing));
+            return new Result(List.copyOf(seasons), null);
+        }
         int mapped = Math.min(scores.size(), chain.size());
         for (int position = 0; position < mapped; position++) {
             Integer score = scores.get(position);
             if (score == null) {
                 continue;
             }
-            ImportSeason season = chain.get(position);
-            ExistingStatus current = existing.get(season.malId());
-            seasons.add(new SeasonPreview(
-                    season.malId(),
-                    season.title(),
-                    season.order(),
-                    season.episodes(),
-                    season.image(),
-                    score,
-                    true,
-                    current,
-                    current == null ? SeasonAction.CREATE : SeasonAction.KEEP,
-                    null));
+            seasons.add(toPreview(chain.get(position), score, existing));
         }
 
         String warning = null;
@@ -43,5 +46,20 @@ public class ScoreMapper {
                     + " calificaciones: la franquicia tiene " + chain.size() + " temporadas";
         }
         return new Result(List.copyOf(seasons), warning);
+    }
+
+    private SeasonPreview toPreview(ImportSeason season, int score, Map<Integer, ExistingStatus> existing) {
+        ExistingStatus current = existing.get(season.malId());
+        return new SeasonPreview(
+                season.malId(),
+                season.title(),
+                season.order(),
+                season.episodes(),
+                season.image(),
+                score,
+                true,
+                current,
+                current == null ? SeasonAction.CREATE : SeasonAction.KEEP,
+                null);
     }
 }

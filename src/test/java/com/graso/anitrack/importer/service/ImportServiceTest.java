@@ -96,6 +96,29 @@ class ImportServiceTest {
     }
 
     @Test
+    void rowWithoutScoreCompletesTheBaseEntryWithoutSendingScore() {
+        when(client.getAnimeList("tok", null)).thenReturn(new AnimeList(List.of()));
+        when(client.searchAnime("tok", "Sousou no Frieren")).thenReturn(searchResponse());
+        when(client.getAnimeDetails("tok", 52991)).thenReturn(details());
+
+        String jobId = service.createJob(csv("nombre;calificacion\nSousou no Frieren;\n"), "tok");
+        ImportJob job = service.get(jobId);
+
+        assertThat(job.previewRows()).singleElement().satisfies(row -> {
+            assertThat(row.status()).isEqualTo(RowStatus.READY);
+            assertThat(row.seasons()).singleElement().satisfies(season -> {
+                assertThat(season.score()).isZero();
+                assertThat(season.episodes()).isEqualTo(28);
+            });
+        });
+
+        service.start(jobId, "tok", List.of(), List.of());
+
+        verify(client).patchListStatus("tok", 52991, "completed", null, 28);
+        assertThat(job.getCounts().synced()).isEqualTo(1);
+    }
+
+    @Test
     void expiredTokenFailsTheJobWithTheExactMessage() {
         when(client.getAnimeList("expired", null)).thenThrow(
                 WebClientResponseException.create(401, "Unauthorized", HttpHeaders.EMPTY, new byte[0], null));

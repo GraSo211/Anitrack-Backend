@@ -134,13 +134,22 @@ class AnimeCsvParserTest {
     }
 
     @Test
-    void allEmptyScoresIsRowError() {
+    void rowWithoutScoresIsValidAndMeansViewedWithoutRating() {
         CsvParseResult result = parse("Frieren;;");
 
-        assertThat(result.rows()).isEmpty();
-        assertThat(result.errors()).singleElement()
-                .extracting(CsvRowError::message)
-                .isEqualTo("sin calificaciones");
+        assertThat(result.errors()).isEmpty();
+        assertThat(result.rows()).singleElement()
+                .extracting(CsvAnimeRow::scores)
+                .isEqualTo(List.of());
+    }
+
+    @Test
+    void dashAndXMeanViewedWithoutScore() {
+        CsvParseResult result = parse("Frieren;-\n\"Steins;Gate\";X");
+
+        assertThat(result.errors()).isEmpty();
+        assertThat(result.rows()).extracting(CsvAnimeRow::scores)
+                .containsExactly(List.of(0), List.of(0));
     }
 
     @Test
@@ -150,7 +159,7 @@ class AnimeCsvParserTest {
         assertThat(result.rows()).isEmpty();
         assertThat(result.errors()).hasSize(2)
                 .allSatisfy(error -> assertThat(error.message())
-                        .isEqualTo("calificación fuera de rango (1-10)"));
+                        .isEqualTo("calificación fuera de rango (1-10). Usá - o x para \"vista sin nota\""));
     }
 
     @Test

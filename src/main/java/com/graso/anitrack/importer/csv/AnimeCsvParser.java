@@ -214,9 +214,6 @@ public class AnimeCsvParser {
         while (!scores.isEmpty() && scores.getLast() == null) {
             scores.removeLast();
         }
-        if (scores.isEmpty()) {
-            throw new RowProblem(title, "sin calificaciones");
-        }
         return new CsvAnimeRow(record.lineNumber(), title, malId, Collections.unmodifiableList(scores));
     }
 
@@ -224,6 +221,9 @@ public class AnimeCsvParser {
         String value = cell.trim();
         if (value.isEmpty()) {
             return null;
+        }
+        if (value.equals("-") || value.equalsIgnoreCase("x")) {
+            return 0;
         }
         BigDecimal number;
         try {
@@ -233,7 +233,7 @@ public class AnimeCsvParser {
         }
         BigDecimal rounded = number.setScale(0, RoundingMode.HALF_UP);
         if (rounded.compareTo(MIN_SCORE) < 0 || rounded.compareTo(MAX_SCORE) > 0) {
-            throw new RowProblem(title, "calificación fuera de rango (1-10)");
+            throw new RowProblem(title, "calificación fuera de rango (1-10). Usá - o x para \"vista sin nota\"");
         }
         return rounded.intValue();
     }

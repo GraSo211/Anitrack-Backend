@@ -25,7 +25,8 @@ class ScoreMapperTest {
         ScoreMapper.Result result = mapper.map(
                 Arrays.asList(9, null, 7),
                 List.of(season(1, 1), season(2, 2), season(3, 3)),
-                Map.of());
+                Map.of(),
+                1);
 
         assertThat(result.seasons()).extracting(SeasonPreview::malId).containsExactly(1, 3);
         assertThat(result.seasons()).extracting(SeasonPreview::score).containsExactly(9, 7);
@@ -37,7 +38,8 @@ class ScoreMapperTest {
         ScoreMapper.Result result = mapper.map(
                 List.of(8),
                 List.of(season(1, 1), season(2, 2), season(3, 3)),
-                Map.of());
+                Map.of(),
+                1);
 
         assertThat(result.seasons()).extracting(SeasonPreview::malId).containsExactly(1);
         assertThat(result.warning()).isNull();
@@ -48,7 +50,8 @@ class ScoreMapperTest {
         ScoreMapper.Result result = mapper.map(
                 List.of(8, 9, 10),
                 List.of(season(1, 1), season(2, 2)),
-                Map.of());
+                Map.of(),
+                1);
 
         assertThat(result.seasons()).hasSize(2);
         assertThat(result.warning()).isEqualTo("Solo se mapearon 2 de 3 calificaciones: la franquicia tiene 2 temporadas");
@@ -61,7 +64,8 @@ class ScoreMapperTest {
         ScoreMapper.Result result = mapper.map(
                 List.of(9),
                 List.of(season(1, 1)),
-                Map.of(1, existing));
+                Map.of(1, existing),
+                1);
 
         SeasonPreview preview = result.seasons().get(0);
         assertThat(preview.action()).isEqualTo(SeasonAction.KEEP);
@@ -72,8 +76,32 @@ class ScoreMapperTest {
     }
 
     @Test
+    void noScoresMarksOnlyTheResolvedBaseEntryWithoutScore() {
+        ScoreMapper.Result result = mapper.map(
+                List.of(),
+                List.of(season(1, 1), season(2, 2), season(3, 3)),
+                Map.of(),
+                2);
+
+        assertThat(result.seasons()).extracting(SeasonPreview::malId).containsExactly(2);
+        assertThat(result.seasons().get(0).score()).isZero();
+        assertThat(result.seasons().get(0).action()).isEqualTo(SeasonAction.CREATE);
+    }
+
+    @Test
+    void zeroMeansViewedWithoutScore() {
+        ScoreMapper.Result result = mapper.map(
+                Arrays.asList(0, 9),
+                List.of(season(1, 1), season(2, 2)),
+                Map.of(),
+                1);
+
+        assertThat(result.seasons()).extracting(SeasonPreview::score).containsExactly(0, 9);
+    }
+
+    @Test
     void seasonWithoutExistingEntryIsCreated() {
-        ScoreMapper.Result result = mapper.map(List.of(9), List.of(season(1, 1)), Map.of());
+        ScoreMapper.Result result = mapper.map(List.of(9), List.of(season(1, 1)), Map.of(), 1);
 
         assertThat(result.seasons().get(0).action()).isEqualTo(SeasonAction.CREATE);
         assertThat(result.seasons().get(0).existing()).isNull();
